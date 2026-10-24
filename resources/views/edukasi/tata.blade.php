@@ -170,7 +170,7 @@
 
             <!-- Tombol kembali -->
             <section class="flex justify-center">
-                <a href="{{ route('beranda') }}" class="inline-flex items-center gap-1.5 rounded-full bg-[#dc2626] hover:bg-[#b91c1c] px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-red-900/20 transition">
+                <a href="{{ route('beranda') }}" class="inline-flex items-center gap-1.5 rounded-full bg-[#c41621] hover:bg-[#a11522] px-5 py-2.5 text-sm font-bold text-white border border-[#c41621]/30 shadow-md shadow-red-900/20 transition">
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
                     Kembali ke Beranda
                 </a>
