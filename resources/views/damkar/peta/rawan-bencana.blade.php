@@ -69,18 +69,18 @@
         <div class="flex flex-wrap items-center gap-5 border-t border-slate-100 px-4 py-3">
             <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
                 <span class="h-3 w-3 rounded-full bg-red-600 opacity-70 ring-2 ring-red-200"></span>
-                Risiko Tinggi (≥ 3 hotspot)
+                Risiko Tinggi (≥ 45 insiden)
             </span>
             <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
                 <span class="h-3 w-3 rounded-full bg-amber-500 opacity-70 ring-2 ring-amber-200"></span>
-                Risiko Sedang (1–2 hotspot)
+                Risiko Sedang (< 45 insiden)
             </span>
             <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
                 <svg class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
-                Centroid cluster
+                Centroid zona
             </span>
             <span class="ml-auto text-[10px] text-slate-400">
-                Sumber: Data Karhutla Sumsel {{ \Carbon\Carbon::now()->year }}
+                Wilayah: Kota Palembang
             </span>
         </div>
     </div>
@@ -90,19 +90,19 @@
 
         {{-- Ringkasan statistik --}}
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="mb-4 text-sm font-extrabold text-slate-800">Ringkasan Hotspot</h2>
+            <h2 class="mb-4 text-sm font-extrabold text-slate-800">Ringkasan Zona Rawan</h2>
             <div class="grid grid-cols-3 gap-3">
                 <div class="rounded-xl bg-red-50 p-3 text-center">
-                    <p class="text-2xl font-black text-[#E52329]">{{ $zonaRawan->where('jumlah_kejadian', '>=', 3)->count() }}</p>
+                    <p class="text-2xl font-black text-[#E52329]">{{ $zonaRawan->where('jumlah_kejadian', '>=', 45)->count() }}</p>
                     <p class="mt-0.5 text-[10px] font-bold text-red-700 leading-tight">Zona<br>Kritis</p>
                 </div>
                 <div class="rounded-xl bg-amber-50 p-3 text-center">
-                    <p class="text-2xl font-black text-amber-600">{{ $zonaRawan->where('jumlah_kejadian', '<', 3)->count() }}</p>
+                    <p class="text-2xl font-black text-amber-600">{{ $zonaRawan->where('jumlah_kejadian', '<', 45)->count() }}</p>
                     <p class="mt-0.5 text-[10px] font-bold text-amber-700 leading-tight">Zona<br>Sedang</p>
                 </div>
                 <div class="rounded-xl bg-slate-50 p-3 text-center">
                     <p class="text-2xl font-black text-slate-700">{{ $zonaRawan->sum('jumlah_kejadian') }}</p>
-                    <p class="mt-0.5 text-[10px] font-bold text-slate-600 leading-tight">Total<br>Hotspot</p>
+                    <p class="mt-0.5 text-[10px] font-bold text-slate-600 leading-tight">Total<br>Insiden</p>
                 </div>
             </div>
         </div>
@@ -131,7 +131,7 @@
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-[12px] font-extrabold text-slate-800">{{ $zona->nama }}</p>
                             <p class="mt-0.5 text-[11px] text-slate-500">
-                                {{ $zona->jumlah_kejadian }} hotspot
+                                {{ $zona->jumlah_kejadian }} insiden
                                 · radius {{ number_format($zona->radius_m / 1000, 1) }} km
                                 @if($zona->ciri)· {{ $zona->ciri }}@endif
                             </p>
@@ -150,7 +150,7 @@
         {{-- Info metodologi --}}
         <div class="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-[11px] text-blue-800">
             <p class="font-bold">ℹ️ Metodologi Zona</p>
-            <p class="mt-1 leading-relaxed">Titik-titik hotspot dikelompokkan (clustering) berdasarkan jarak ≤ 5 km. Radius buffer = jangkauan max titik terluar + 500 m cadangan. Risiko tinggi bila terdapat ≥ 3 hotspot dalam satu zona.</p>
+            <p class="mt-1 leading-relaxed">Zonasi pemetaan ditentukan berdasarkan riwayat frekuensi insiden kebakaran wilayah Kota Palembang. Radius buffer (500–900 m) merepresentasikan lingkaran sebaran risiko bahaya kebakaran.</p>
         </div>
 
     </aside>
@@ -161,7 +161,7 @@
 <script>
 const ZONA_DATA = {!! $zonaData !!};
 
-const map = L.map('rawan-map', { zoomControl: false }).setView([-3.2, 104.95], 9);
+const map = L.map('rawan-map', { zoomControl: false }).setView([-2.983, 104.755], 12);
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 // Basemap OpenStreetMap

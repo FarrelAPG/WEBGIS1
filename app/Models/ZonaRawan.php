@@ -22,14 +22,10 @@ class ZonaRawan extends Model
     ];
 
     /**
-     * Zona dikategorikan risiko tinggi bila kejadiannya tinggi.
-     */
-    /**
-     * Zona dikategorikan risiko tinggi bila memiliki >= 3 hotspot dalam satu cluster.
-     * Threshold disesuaikan dengan data karhutla aktual (per cluster 5 km).
+     * Zona dikategorikan risiko tinggi bila jumlah kejadian >= 45.
      */
     public function risikoTinggi(): bool
     {
-        return $this->jumlah_kejadian >= 3;
+        return $this->jumlah_kejadian >= 45;
     }
 }
