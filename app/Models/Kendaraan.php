@@ -13,6 +13,10 @@ class Kendaraan extends Model
     protected $fillable = [
         'kode',
         'nama',
+        'pos_damkar_id',
+        'jenis',
+        'spesifikasi',
+        'ukuran',
         'status',
         'latitude',
         'longitude',
@@ -22,6 +26,11 @@ class Kendaraan extends Model
     public function scopeSiaga($query)
     {
         return $query->where('status', 'siaga');
+    }
+
+    public function posDamkar()
+    {
+        return $this->belongsTo(PosDamkar::class);
     }
 
     public function laporan()

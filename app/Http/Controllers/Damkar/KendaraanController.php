@@ -18,7 +18,7 @@ class KendaraanController extends Controller
 
                 return [
                     'kendaraan' => $kendaraan,
-                    'jenis' => str_contains($namaKendaraan, 'tanker') ? 'Fire Tanker' : 'Fire Truck',
+                    'jenis' => $kendaraan->jenis ?: (str_contains($namaKendaraan, 'tanker') ? 'Fire Tanker' : 'Fire Truck'),
                     'statusLabel' => match ($kendaraan->status) {
                         'siaga' => 'Operasional',
                         'bergerak' => 'Bergerak',
