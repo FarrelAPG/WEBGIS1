@@ -20,7 +20,11 @@
                         <span class="block text-xl font-semibold tracking-tight text-[#292626]">Beranda</span>
                     </span>
                 </a>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2.5">
+                    <a href="{{ route('portal') }}" title="Kembali ke Pilihan Portal" class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold text-slate-600 shadow-sm transition hover:border-red-200 hover:text-[#bd101b]">
+                        <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        <span>Portal</span>
+                    </a>
                     <button type="button" aria-label="Notifikasi" onclick="location.href='{{ route('laporan.saya') }}'" class="relative rounded-full p-1 text-[#473a38]">
                         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
                         <span class="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-[#c41621] ring-2 ring-[#fffaf8]"></span>

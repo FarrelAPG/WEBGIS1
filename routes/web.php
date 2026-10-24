@@ -10,7 +10,13 @@ use App\Http\Controllers\PetaController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [BerandaController::class, 'index'])->name('beranda');
+// Halaman awal portal pemilih peran (Masyarakat atau Admin Damkar)
+Route::get('/', function () {
+    return view('portal');
+})->name('portal');
+
+// Halaman antarmuka Masyarakat (Publik)
+Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
 Route::get('/peta', [PetaController::class, 'publik'])->name('peta');
 Route::get('/lapor', [LaporanController::class, 'create'])->name('lapor.create');
 Route::post('/lapor', [LaporanController::class, 'store'])->name('lapor.store');
