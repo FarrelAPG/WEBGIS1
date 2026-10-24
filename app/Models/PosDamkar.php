@@ -17,4 +17,9 @@ class PosDamkar extends Model
         'latitude',
         'longitude',
     ];
+
+    public function kendaraan()
+    {
+        return $this->hasMany(Kendaraan::class);
+    }
 }

@@ -22,10 +22,10 @@ class ZonaRawan extends Model
     ];
 
     /**
-     * Zona dikategorikan risiko tinggi bila kejadiannya tinggi.
+     * Zona dikategorikan risiko tinggi bila memiliki >= 3 hotspot satelit dalam satu cluster.
      */
     public function risikoTinggi(): bool
     {
-        return $this->jumlah_kejadian >= 45;
+        return $this->jumlah_kejadian >= 3;
     }
 }
