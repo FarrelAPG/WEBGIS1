@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\ZonaRawan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -37,41 +36,31 @@ class PetaTest extends TestCase
             ->assertSee('Peta Daerah Rawan Kebakaran');
     }
 
-    public function test_rawan_bencana_page_shows_top_2_ranked_zones(): void
+    public function test_rawan_bencana_page_shows_clustered_dataset_and_summary(): void
     {
-        ZonaRawan::factory()->create([
-            'nama' => 'Seberang Ulu I',
-            'jumlah_kejadian' => 68,
-            'latitude' => -2.9920,
-            'longitude' => 104.7575,
-        ]);
-        ZonaRawan::factory()->create([
-            'nama' => 'Ilir Timur II',
-            'jumlah_kejadian' => 52,
-            'latitude' => -2.9745,
-            'longitude' => 104.7815,
-        ]);
-
         $damkar = User::factory()->create(['role' => 'damkar']);
 
-        $this->actingAs($damkar)->get(route('damkar.peta.rawan-bencana'))
+        $response = $this->actingAs($damkar)->get(route('damkar.peta.rawan-bencana'))
             ->assertOk()
-            ->assertSeeInOrder(['Seberang Ulu I', 'Ilir Timur II'])
-            ->assertSee('Risiko Tinggi');
+            ->assertViewHas('jumlahZonaKritis', 4)
+            ->assertViewHas('jumlahZonaSedang', 2)
+            ->assertViewHas('totalHotspot', 22)
+            ->assertViewHas('zonaRawan', fn ($zones): bool => $zones->count() === 6);
+
+        $response->assertSee('Sektor 06')
+            ->assertSee('FRP 19.0 MW');
     }
 
-    public function test_rawan_bencana_page_shows_label_for_low_incidence_zone(): void
+    public function test_rawan_bencana_page_includes_hotspot_details_for_map_popups(): void
     {
-        ZonaRawan::factory()->create([
-            'nama' => 'Sukarami',
-            'jumlah_kejadian' => 31,
-        ]);
-
         $damkar = User::factory()->create(['role' => 'damkar']);
 
         $this->actingAs($damkar)->get(route('damkar.peta.rawan-bencana'))
             ->assertOk()
-            ->assertSee('Sukarami')
-            ->assertSee('Risiko Sedang');
+            ->assertSee('2026-10-12')
+            ->assertSee('01:47 UTC')
+            ->assertSee('Terra')
+            ->assertSee('confidence')
+            ->assertSee('-3.32964');
     }
 }

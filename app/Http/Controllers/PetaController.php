@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\PosDamkar;
 use App\Models\ZonaRawan;
+use App\Services\HotspotZoneService;
 use App\Services\IsokronService;
+use Illuminate\Contracts\View\View;
 use Throwable;
 
 class PetaController extends Controller
@@ -175,11 +177,24 @@ class PetaController extends Controller
         return view('damkar.peta.sumber-air', compact('sumberAir'));
     }
 
-    public function rawanBencana()
+    public function rawanBencana(HotspotZoneService $hotspotZones): View
     {
-        $zonaRawan = ZonaRawan::orderByDesc('jumlah_kejadian')->get();
+        $zonaRawan = collect($hotspotZones->clusters())
+            ->sortByDesc('jumlah')
+            ->values();
 
-        return view('damkar.peta.rawan-bencana', compact('zonaRawan'));
+        return view('damkar.peta.rawan-bencana', [
+            'zonaRawan' => $zonaRawan,
+            'totalHotspot' => $zonaRawan->sum('jumlah'),
+            'jumlahZonaKritis' => $zonaRawan->where('tinggi', true)->count(),
+            'jumlahZonaSedang' => $zonaRawan->where('tinggi', false)->count(),
+            'tanggalDataset' => $zonaRawan
+                ->flatMap(static fn (array $zona): array => $zona['hotspots'])
+                ->pluck('tanggal')
+                ->unique()
+                ->sort()
+                ->implode(', '),
+        ]);
     }
 
     public function publik()
