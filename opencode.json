@@ -22,9 +22,8 @@
             "type": "local",
             "enabled": true,
             "command": [
-                "npx",
-                "-y",
-                "mcp-server-mysql",
+                "node",
+                "node_modules/mcp-server-mysql/index.js",
                 "--host", "127.0.0.1",
                 "--user", "root",
                 "--password", "",
