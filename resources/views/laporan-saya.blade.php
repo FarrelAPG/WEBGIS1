@@ -7,8 +7,8 @@
     <title>SIGAP Damkar — Laporan Saya</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100 sm:px-4 sm:py-6">
-    <div class="min-h-screen w-full max-w-2xl bg-[#fffaf8] shadow-[0_0_32px_rgba(75,35,35,0.06)] sm:min-h-0 sm:rounded-2xl sm:overflow-clip">
+<body class="min-h-screen font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100">
+    <div class="min-h-screen w-full max-w-2xl bg-[#fffaf8] shadow-[0_0_32px_rgba(75,35,35,0.06)] sm:shadow-xl flex flex-col justify-between">
 
         <header class="sticky top-0 z-20 border-b border-[#f2e9e6] bg-[#fffaf8]/95 px-5 py-3 backdrop-blur">
             <div class="flex items-center gap-3">
@@ -32,7 +32,7 @@
             $selesai = $laporanTerbaru && ! $ditolak && $laporanTerbaru->tahapMasyarakat() >= 4;
             $berjalan = $laporanTerbaru && ! $ditolak && ! $selesai;
         @endphp
-        <main class="space-y-5 px-5 pb-6 pt-4 sm:px-7">
+        <main class="flex-1 space-y-5 px-5 pb-6 pt-4 sm:px-7">
 
             @if (session('info'))
                 <div role="alert" class="rounded-xl border border-[#f3d9a4] bg-[#fff7e6] px-4 py-3 text-[12px] font-semibold text-[#8a5a00]">{{ session('info') }}</div>

@@ -7,8 +7,8 @@
     <title>SIGAP Damkar — Beranda</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100 sm:px-4 sm:py-6">
-    <div class="min-h-screen w-full max-w-2xl bg-[#fffaf8] shadow-[0_0_32px_rgba(75,35,35,0.06)] sm:min-h-0 sm:rounded-2xl sm:overflow-clip">
+<body class="min-h-screen font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100">
+    <div class="min-h-screen w-full max-w-2xl bg-[#fffaf8] shadow-[0_0_32px_rgba(75,35,35,0.06)] sm:shadow-xl flex flex-col justify-between">
         <header class="sticky top-0 z-20 border-b border-[#f2e9e6] bg-[#fffaf8]/95 px-5 py-3 backdrop-blur">
             <div class="flex items-center justify-between gap-3">
                 <a href="{{ route('beranda') }}" class="flex min-w-0 items-center gap-2.5" aria-label="SIGAP Damkar Beranda">
@@ -32,7 +32,7 @@
             </div>
         </header>
 
-        <main class="space-y-5 px-5 pb-6 pt-3 sm:px-7">
+        <main class="flex-1 space-y-5 px-5 pb-6 pt-3 sm:px-7">
             <section aria-labelledby="greeting-title" class="space-y-1">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <h1 id="greeting-title" class="text-[22px] font-bold leading-tight tracking-tight sm:text-2xl">Halo, @auth{{ Auth::user()->name }}@else Budi Santoso @endauth <span aria-hidden="true">👋</span></h1>

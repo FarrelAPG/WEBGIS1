@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 </head>
-<body class="min-h-screen bg-[#eef1f6] font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100 sm:px-4 sm:py-6">
-    <div class="min-h-screen w-full max-w-2xl bg-[#eef1f6] shadow-[0_0_32px_rgba(75,35,35,0.06)] sm:min-h-0 sm:rounded-2xl sm:overflow-clip">
+<body class="min-h-screen bg-[#eef1f6] font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100">
+    <div class="min-h-screen w-full max-w-2xl bg-[#eef1f6] shadow-[0_0_32px_rgba(75,35,35,0.06)] sm:shadow-xl flex flex-col justify-between">
 
         <header class="sticky top-0 z-20 border-b border-[#e2e6ee] bg-[#eef1f6]/95 px-5 py-3 backdrop-blur">
             <div class="flex items-center gap-3">
@@ -29,7 +29,7 @@
             </div>
         </header>
 
-        <main class="space-y-4 px-5 pb-4 pt-4 sm:px-7">
+        <main class="flex-1 space-y-4 px-5 pb-4 pt-4 sm:px-7">
 
             <!-- Kartu Ringkasan Laporan -->
             <section aria-labelledby="ringkasan-title" class="rounded-xl bg-white p-4 shadow-[0_3px_12px_rgba(65,45,40,0.05)]">

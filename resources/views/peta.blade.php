@@ -110,8 +110,8 @@
         }
     </style>
 </head>
-<body class="min-h-screen font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100 sm:px-4 sm:py-6">
-    <div class="min-h-screen w-full max-w-2xl lg:max-w-6xl xl:max-w-7xl bg-[#fffaf8] shadow-[0_0_32px_rgba(75,35,35,0.06)] sm:min-h-0 sm:rounded-2xl sm:overflow-clip flex flex-col justify-between">
+<body class="min-h-screen font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100">
+    <div class="min-h-screen w-full max-w-2xl lg:max-w-6xl xl:max-w-7xl bg-[#fffaf8] shadow-[0_0_32px_rgba(75,35,35,0.06)] sm:shadow-xl flex flex-col justify-between">
 
         <!-- Top Header Bar (Masyarakat) -->
         <header class="sticky top-0 z-20 border-b border-[#f2e9e6] bg-[#fffaf8]/95 px-5 py-3 backdrop-blur">
