@@ -5,7 +5,9 @@ use App\Http\Controllers\Damkar\DashboardController;
 use App\Http\Controllers\Damkar\KendaraanController;
 use App\Http\Controllers\Damkar\LaporanController as DamkarLaporanController;
 use App\Http\Controllers\Damkar\PosDamkarController;
+use App\Http\Controllers\EdukasiController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\MasyarakatProfileController;
 use App\Http\Controllers\PetaController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +25,13 @@ Route::post('/lapor', [LaporanController::class, 'store'])->name('lapor.store');
 Route::get('/lapor/sukses/{id}', [LaporanController::class, 'sukses'])->name('lapor.sukses');
 Route::get('/laporan-saya', [LaporanController::class, 'index'])->name('laporan.saya');
 Route::get('/laporan/{laporan}/lacak', [LaporanController::class, 'lacak'])->name('laporan.lacak');
+
+// Halaman profil publik Masyarakat (tanpa middleware auth / tanpa login)
+Route::get('/masyarakat/profile', [MasyarakatProfileController::class, 'index'])->name('masyarakat.profile');
+
+// Halaman edukasi & antisipasi kebakaran publik (tanpa middleware auth)
+Route::get('/edukasi', [EdukasiController::class, 'index'])->name('edukasi.index');
+Route::get('/edukasi/metode-tata', [EdukasiController::class, 'tata'])->name('edukasi.tata');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

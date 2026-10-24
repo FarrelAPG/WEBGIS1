@@ -29,7 +29,7 @@
                         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
                         <span class="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-[#c41621] ring-2 ring-[#fffaf8]"></span>
                     </button>
-                    <a href="@auth{{ route('profile.edit') }}@else{{ route('login') }}@endauth" class="h-9 w-9 overflow-hidden rounded-full border-2 border-[#e7b5ae] bg-white p-0.5" aria-label="Profil">
+                    <a href="{{ route('masyarakat.profile') }}" class="h-9 w-9 overflow-hidden rounded-full border-2 border-[#e7b5ae] bg-white p-0.5" aria-label="Profil">
                         <img src="{{ asset('images/avatar.svg') }}" alt="Foto profil" class="h-full w-full rounded-full object-cover">
                     </a>
                 </div>
@@ -140,8 +140,8 @@
             </section>
 
             <section aria-labelledby="education-title" class="space-y-2">
-                <div class="flex items-center justify-between gap-2"><h2 id="education-title" class="text-sm font-bold">Edukasi &amp; Antisipasi Cepat</h2><a href="#edukasi" class="text-[10px] font-semibold text-[#bd101b]">Lihat Semua</a></div>
-                <a id="edukasi" href="#edukasi" class="flex items-center gap-3 rounded-xl border border-[#f3eeeb] bg-white p-3.5 shadow-[0_3px_12px_rgba(65,45,40,0.04)]">
+                <div class="flex items-center justify-between gap-2"><h2 id="education-title" class="text-sm font-bold">Edukasi &amp; Antisipasi Cepat</h2><a href="{{ route('edukasi.index') }}" class="text-[10px] font-semibold text-[#bd101b]">Lihat Semua</a></div>
+                <a href="{{ route('edukasi.tata') }}" class="flex items-center gap-3 rounded-xl border border-[#f3eeeb] bg-white p-3.5 shadow-[0_3px_12px_rgba(65,45,40,0.04)]">
                     <span class="flex h-[58px] w-16 shrink-0 items-center justify-center rounded-lg bg-[#eef0ed] text-[#9a3026]"><svg class="h-11 w-11" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M17 13h14v4H17z" fill="#77716b"/><path d="M20 17h8v23h-8z" rx="2" fill="#c8c7bf" stroke="#77716b" stroke-width="1.5"/><path d="M22 9h4v4h-4zM21 22h6v2h-6z" fill="#bd101b"/><path d="M18 19h-3v5h3m13-5h3v5h-3" stroke="#77716b" stroke-width="1.5" stroke-linecap="round"/><path d="M23 26h2m-1-1v4" stroke="#bd101b" stroke-width="1.5" stroke-linecap="round"/><path d="M24 9c-2-2-1-4 0-5 1 2 2 3 0 5Z" fill="#e9a22b"/></svg></span>
                     <span class="min-w-0 flex-1"><span class="flex flex-wrap items-center gap-2 text-[10px] text-[#766965]"><span class="rounded bg-[#fff0e5] px-1.5 py-0.5 font-semibold text-[#8b4c27]">Tips APAR</span>Baca 1 menit</span><span class="mt-1 block text-[13px] font-bold leading-tight">Metode T.A.T.A Saat Api Mulai Muncul</span><span class="mt-1 block truncate text-[11px] text-[#766965]">Tarik pin, Arahkan nozzle, Tekan tuas,...</span></span>
                     <svg class="h-4 w-4 shrink-0 text-[#6d514b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
@@ -153,7 +153,7 @@
             <a href="{{ route('beranda') }}" aria-current="page" class="flex flex-col items-center gap-0.5 text-[#bd101b]"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6c.8 1.5-.7 2.2.4 3 1-.5 1.3-1.4 1.3-1.4 1.2 1.7 1.3 2.6.3 3.7"/></svg><span class="text-[10px] font-bold">Beranda</span></a>
             <a href="{{ route('peta') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15"/></svg><span class="text-[10px] font-bold">Peta</span></a>
             <a href="{{ route('laporan.saya') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4h6l1 2h4v15H4V6h4l1-2Zm1 6h4m-4 4h6m-6 4h6"/></svg><span class="text-[10px] font-bold">Laporan</span></a>
-            <a href="@auth{{ route('profile.edit') }}@else{{ route('login') }}@endauth" class="flex flex-col items-center gap-0.5 text-[#705d58]"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 21v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2H4Z"/></svg><span class="text-[10px] font-bold">Profil</span></a>
+            <a href="{{ route('masyarakat.profile') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 21v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2H4Z"/></svg><span class="text-[10px] font-bold">Profil</span></a>
         </nav>
     </div>
 

@@ -1,5 +1,7 @@
 *.log
 .DS_Store
+Webgis1
+*.sqlite
 .env
 .env.backup
 .env.production
