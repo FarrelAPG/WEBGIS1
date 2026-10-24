@@ -35,7 +35,7 @@
                 <div class="flex items-center gap-2">
                     <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fdecea] text-[#c41621] text-lg" aria-hidden="true">🧯</span>
                     <div>
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#fff0e5] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#8b4c27"]>Tips APAR · 1 menit</span>
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#fff0e5] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#8b4c27]">Tips APAR · 1 menit</span>
                         <h1 id="tata-title" class="text-xl font-bold leading-tight tracking-tight">Metode T.A.T.A Saat Api Mulai Muncul</h1>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                         <p class="text-[13px] font-bold leading-snug text-[#292626]">Tarik Pin (Pull)</p>
                         <p class="mt-0.5 text-[11px] text-[#5c4f4c]">Cabut pin pengaman di bagian handle APAR agar nozzle bisa ditekan.</p>
                     </div>
-                    <span class="flex shrink-0 text-[#c41621]" aria-hidden="title">🔒</span>
+                    <span class="flex shrink-0 text-[#c41621] text-base" aria-hidden="true">🧷</span>
                 </div>
 
                 <!-- Langkah 2: Arahkan Nozzle -->
@@ -78,7 +78,7 @@
                         <p class="text-[13px] font-bold leading-snug text-[#292626]">Arahkan Nozzle (Aim)</p>
                         <p class="mt-0.5 text-[11px] text-[#5c4f4c]">Bidik nozzle ke pangkalan api, bukan ke asapnya. Pegang ujung selang dengan kokoh.</p>
                     </div>
-                    <span class="flex shrink-0 text-[#c41621]" aria-hidden="true">🔒</span>
+                    <span class="flex shrink-0 text-[#c41621] text-base" aria-hidden="true">🎯</span>
                 </div>
 
                 <!-- Langkah 3: Tekan Tuas -->
@@ -88,7 +88,7 @@
                         <p class="text-[13px] font-bold leading-snug text-[#292626]">Tekan Tuas (Squeeze)</p>
                         <p class="mt-0.5 text-[11px] text-[#5c4f4c]">Tekan tuas/handle dengan kuat dan stabil agar zat pemadam keluar maksimal.</p>
                     </div>
-                    <span class="flex shrink-0 text-[#c41621]" aria-hidden="true">🔒</span>
+                    <span class="flex shrink-0 text-[#c41621] text-base" aria-hidden="true">✊</span>
                 </div>
 
                 <!-- Langkah 4: Sapukan ke Sumber Api -->
@@ -98,7 +98,7 @@
                         <p class="text-[13px] font-bold leading-snug text-[#292626]">Sapukan ke Sumber Api (Sweep)</p>
                         <p class="mt-0.5 text-[11px] text-[#5c4f4c]">Gerakkan nozzle dari kiri ke kanan (sapuan) menyelimuti dasar api hingga padam.</p>
                     </div>
-                    <span class="flex shrink-0 text-[#c41621]" aria-hidden="true">🔒</span>
+                    <span class="flex shrink-0 text-[#c41621] text-base" aria-hidden="true">↔️</span>
                 </div>
             </section>
 
