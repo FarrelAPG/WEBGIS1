@@ -1,0 +1,35 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "mcp": {
+        "laravel-boost": {
+            "type": "local",
+            "enabled": true,
+            "command": [
+                "php",
+                "artisan",
+                "boost:mcp"
+            ]
+        },
+        "browser-mcp": {
+            "type": "local",
+            "enabled": true,
+            "command": [
+                "npx",
+                "browser-mcp"
+            ]
+        },
+        "mysql-db": {
+            "type": "local",
+            "enabled": true,
+            "command": [
+                "npx",
+                "-y",
+                "mcp-server-mysql",
+                "--host", "127.0.0.1",
+                "--user", "root",
+                "--password", "",
+                "--database", "db_sigap"
+            ]
+        }
+    }
+}
