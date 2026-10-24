@@ -11,6 +11,7 @@ class KendaraanController extends Controller
     public function index(): View
     {
         $kendaraanList = Kendaraan::query()
+            ->with('posDamkar')
             ->orderBy('kode')
             ->get()
             ->map(function (Kendaraan $kendaraan): array {

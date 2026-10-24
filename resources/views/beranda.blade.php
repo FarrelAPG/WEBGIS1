@@ -35,7 +35,7 @@
         <main class="flex-1 space-y-5 px-5 pb-6 pt-3 sm:px-7">
             <section aria-labelledby="greeting-title" class="space-y-1">
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                    <h1 id="greeting-title" class="text-[22px] font-bold leading-tight tracking-tight sm:text-2xl">Halo, @auth{{ Auth::user()->name }}@else Budi Santoso @endauth <span aria-hidden="true">👋</span></h1>
+                    <h1 id="greeting-title" class="text-[22px] font-bold leading-tight tracking-tight sm:text-2xl">Halo, @auth{{ Auth::user()->name }}@else Warga Palembang @endauth <span aria-hidden="true">👋</span></h1>
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-[#f2f0ed] px-2.5 py-1 text-[10px] font-medium text-[#494442]"><span class="h-2 w-2 rounded-full bg-emerald-600"></span>Posisi Aman</span>
                 </div>
                 <p class="text-sm text-[#766965]">Tetap waspada, laporkan keadaan darurat segera.</p>
