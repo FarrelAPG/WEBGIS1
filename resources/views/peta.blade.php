@@ -92,6 +92,11 @@
         .pos-damkar-badge:hover {
             transform: rotate(-45deg) scale(1.12);
         }
+        .pos-damkar-badge-active {
+            transform: rotate(-45deg) scale(1.25) !important;
+            box-shadow: 0 0 0 4px rgba(229, 35, 41, 0.4), 0 8px 18px rgba(189, 16, 27, 0.7) !important;
+            z-index: 999 !important;
+        }
         .pos-damkar-badge-icon {
             transform: rotate(45deg);
             font-size: 15px;
@@ -251,20 +256,25 @@
                     </div>
 
                     <div id="pos-list-container" class="custom-scroll mt-3 flex-1 space-y-2.5 overflow-y-auto pr-1.5">
-                        @foreach ($posDamkarList as $pos)
-                            <div class="pos-card group flex items-start justify-between gap-3 rounded-xl border border-[#f0e8e5] bg-white p-3.5 shadow-sm transition hover:border-red-200 hover:shadow-md cursor-pointer"
+                        @foreach ($posDamkarList as $idx => $pos)
+                            <div class="pos-card group flex items-start justify-between gap-3 rounded-xl border {{ $idx === 0 ? 'border-[#bd101b] bg-red-50/50 ring-2 ring-[#bd101b]/20 shadow-md' : 'border-[#f0e8e5] bg-white' }} p-3.5 shadow-sm transition hover:border-red-200 hover:shadow-md cursor-pointer"
                                  data-id="{{ $pos->id }}"
                                  data-lat="{{ $pos->latitude }}"
                                  data-lng="{{ $pos->longitude }}"
                                  data-nama="{{ $pos->nama }}"
                                  data-unit="{{ $pos->unit }}">
                                 <div class="flex items-start gap-3 min-w-0">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-50 text-[#bd101b] font-bold text-xs group-hover:bg-[#bd101b] group-hover:text-white transition">
+                                    <span class="pos-icon-badge flex h-9 w-9 shrink-0 items-center justify-center rounded-xl {{ $idx === 0 ? 'bg-[#bd101b] text-white shadow-sm' : 'bg-red-50 text-[#bd101b]' }} font-bold text-xs group-hover:bg-[#bd101b] group-hover:text-white transition">
                                         🚒
                                     </span>
                                     <div class="min-w-0 leading-tight">
                                         <div class="flex items-center gap-1.5">
-                                            <h3 class="text-xs font-extrabold text-slate-900 group-hover:text-[#bd101b] transition">{{ $pos->nama }}</h3>
+                                            <h3 class="pos-title text-xs font-extrabold {{ $idx === 0 ? 'text-[#bd101b]' : 'text-slate-900' }} group-hover:text-[#bd101b] transition">{{ $pos->nama }}</h3>
+                                            <div class="pos-badges flex items-center gap-1">
+                                                @if ($idx === 0)
+                                                    <span class="rounded bg-[#bd101b] px-1.5 py-0.5 text-[9px] font-extrabold text-white">Dipilih</span>
+                                                @endif
+                                            </div>
                                         </div>
                                         <p class="mt-1 line-clamp-1 text-[11px] text-slate-500">{{ $pos->alamat }}</p>
                                         <div class="mt-1.5 flex items-center gap-2">
@@ -346,6 +356,7 @@
         let userMarker = null;
         let userAccuracyCircle = null;
         let nearestPos = null;
+        let selectedPosId = posDamkarList.length > 0 ? posDamkarList[0].id : null;
         const posMarkers = {};
 
         // Custom Icon untuk Pos Damkar
@@ -451,6 +462,10 @@
                 return buildPopupContent(pos, dist);
             });
 
+            marker.on('click', () => {
+                selectPos(pos.id, false);
+            });
+
             posMarkers[pos.id] = marker;
             allLatLngs.push([pos.latitude, pos.longitude]);
         });
@@ -459,6 +474,95 @@
         if (allLatLngs.length > 0) {
             map.fitBounds(L.latLngBounds(allLatLngs), { padding: [40, 40] });
         }
+
+        // Fungsi Memilih Pos (Warna merah-merah pindah ke pos yang dipilih)
+        function selectPos(id, shouldFly = true) {
+            id = parseInt(id);
+            selectedPosId = id;
+
+            // 1. Perbarui tampilan visual kartu di daftar pos (pindahkan warna merah)
+            const cards = document.querySelectorAll('.pos-card');
+            cards.forEach(card => {
+                const cardId = parseInt(card.dataset.id);
+                const isSelected = cardId === id;
+                const isNearest = nearestPos && parseInt(nearestPos.id) === cardId;
+                const iconSpan = card.querySelector('.pos-icon-badge');
+                const titleEl = card.querySelector('.pos-title');
+                const badgeContainer = card.querySelector('.pos-badges');
+
+                if (isSelected) {
+                    card.classList.remove('border-[#f0e8e5]', 'bg-white');
+                    card.classList.add('border-[#bd101b]', 'bg-red-50/50', 'ring-2', 'ring-[#bd101b]/20', 'shadow-md');
+                    if (iconSpan) {
+                        iconSpan.classList.remove('bg-red-50', 'text-[#bd101b]');
+                        iconSpan.classList.add('bg-[#bd101b]', 'text-white', 'shadow-sm');
+                    }
+                    if (titleEl) {
+                        titleEl.classList.remove('text-slate-900');
+                        titleEl.classList.add('text-[#bd101b]');
+                    }
+                    // Otomatis scroll daftar pos agar kartu yang dipilih terlihat
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    card.classList.remove('border-[#bd101b]', 'bg-red-50/50', 'ring-2', 'ring-[#bd101b]/20', 'shadow-md');
+                    card.classList.add('border-[#f0e8e5]', 'bg-white');
+                    if (iconSpan) {
+                        iconSpan.classList.remove('bg-[#bd101b]', 'text-white', 'shadow-sm');
+                        iconSpan.classList.add('bg-red-50', 'text-[#bd101b]');
+                    }
+                    if (titleEl) {
+                        titleEl.classList.remove('text-[#bd101b]');
+                        titleEl.classList.add('text-slate-900');
+                    }
+                }
+
+                if (badgeContainer) {
+                    let html = '';
+                    if (isSelected) {
+                        html += '<span class="rounded bg-[#bd101b] px-1.5 py-0.5 text-[9px] font-extrabold text-white">Dipilih</span>';
+                    }
+                    if (isNearest) {
+                        html += '<span class="rounded bg-red-100 px-1.5 py-0.5 text-[9px] font-extrabold text-[#bd101b]">Terdekat</span>';
+                    }
+                    badgeContainer.innerHTML = html;
+                }
+            });
+
+            // 2. Perbarui pin marker di peta Leaflet (aktifkan efek zoom/halo pada marker terpilih)
+            Object.keys(posMarkers).forEach(pId => {
+                const m = posMarkers[pId];
+                if (m) {
+                    const el = m.getElement();
+                    if (el) {
+                        const badge = el.querySelector('.pos-damkar-badge');
+                        if (badge) {
+                            if (parseInt(pId) === id) {
+                                badge.classList.add('pos-damkar-badge-active');
+                            } else {
+                                badge.classList.remove('pos-damkar-badge-active');
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 3. Pusatkan peta ke pos yang dipilih dan buka pop-up
+            const targetPos = posDamkarList.find(p => parseInt(p.id) === id);
+            if (targetPos && shouldFly) {
+                map.flyTo([targetPos.latitude, targetPos.longitude], 15, { duration: 0.8 });
+                const m = posMarkers[id];
+                if (m) {
+                    setTimeout(() => m.openPopup(), 450);
+                }
+            }
+        }
+
+        // Pasang event listener pada kartu awal (HTML Blade)
+        document.querySelectorAll('.pos-card').forEach(card => {
+            card.addEventListener('click', () => {
+                selectPos(card.dataset.id, true);
+            });
+        });
 
         // Perbarui Tampilan Jarak & Urutan Pos
         function updateDistanceAndSort() {
@@ -497,17 +601,29 @@
             if (container) {
                 container.innerHTML = '';
                 posWithDistance.forEach((pos, idx) => {
+                    const isSelected = selectedPosId ? (parseInt(pos.id) === parseInt(selectedPosId)) : (idx === 0);
+                    const isNearest = (idx === 0);
+
                     const card = document.createElement('div');
-                    card.className = `pos-card group flex items-start justify-between gap-3 rounded-xl border ${idx === 0 ? 'border-red-300 bg-red-50/30' : 'border-[#f0e8e5] bg-white'} p-3.5 shadow-sm transition hover:border-red-200 hover:shadow-md cursor-pointer`;
+                    card.className = `pos-card group flex items-start justify-between gap-3 rounded-xl border ${isSelected ? 'border-[#bd101b] bg-red-50/50 ring-2 ring-[#bd101b]/20 shadow-md' : 'border-[#f0e8e5] bg-white'} p-3.5 shadow-sm transition hover:border-red-200 hover:shadow-md cursor-pointer`;
+                    card.dataset.id = pos.id;
+                    card.dataset.lat = pos.latitude;
+                    card.dataset.lng = pos.longitude;
+                    card.dataset.nama = pos.nama;
+                    card.dataset.unit = pos.unit;
+
                     card.innerHTML = `
                         <div class="flex items-start gap-3 min-w-0">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${idx === 0 ? 'bg-[#bd101b] text-white' : 'bg-red-50 text-[#bd101b]'} font-bold text-xs group-hover:bg-[#bd101b] group-hover:text-white transition">
+                            <span class="pos-icon-badge flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${isSelected ? 'bg-[#bd101b] text-white shadow-sm' : 'bg-red-50 text-[#bd101b]'} font-bold text-xs group-hover:bg-[#bd101b] group-hover:text-white transition">
                                 🚒
                             </span>
                             <div class="min-w-0 leading-tight">
                                 <div class="flex items-center gap-1.5">
-                                    <h3 class="text-xs font-extrabold text-slate-900 group-hover:text-[#bd101b] transition">${pos.nama}</h3>
-                                    ${idx === 0 ? '<span class="rounded bg-red-100 px-1.5 py-0.2 text-[9px] font-extrabold text-[#bd101b]">Terdekat</span>' : ''}
+                                    <h3 class="pos-title text-xs font-extrabold ${isSelected ? 'text-[#bd101b]' : 'text-slate-900'} group-hover:text-[#bd101b] transition">${pos.nama}</h3>
+                                    <div class="pos-badges flex items-center gap-1">
+                                        ${isSelected ? '<span class="rounded bg-[#bd101b] px-1.5 py-0.5 text-[9px] font-extrabold text-white">Dipilih</span>' : ''}
+                                        ${isNearest ? '<span class="rounded bg-red-100 px-1.5 py-0.5 text-[9px] font-extrabold text-[#bd101b]">Terdekat</span>' : ''}
+                                    </div>
                                 </div>
                                 <p class="mt-1 line-clamp-1 text-[11px] text-slate-500">${pos.alamat}</p>
                                 <div class="mt-1.5 flex items-center gap-2">
@@ -524,20 +640,11 @@
                     `;
 
                     card.addEventListener('click', () => {
-                        focusPos(pos.id, pos.latitude, pos.longitude);
+                        selectPos(pos.id, true);
                     });
 
                     container.appendChild(card);
                 });
-            }
-        }
-
-        // Fokus ke Pos Tertentu
-        function focusPos(id, lat, lng) {
-            map.flyTo([lat, lng], 15, { duration: 1 });
-            const m = posMarkers[id];
-            if (m) {
-                setTimeout(() => m.openPopup(), 600);
             }
         }
 
@@ -546,7 +653,9 @@
         if (btnFocusNearest) {
             btnFocusNearest.addEventListener('click', () => {
                 if (nearestPos) {
-                    focusPos(nearestPos.id, nearestPos.latitude, nearestPos.longitude);
+                    selectPos(nearestPos.id, true);
+                } else if (posDamkarList.length > 0) {
+                    selectPos(posDamkarList[0].id, true);
                 } else {
                     alert('Sedang menentukan pos terdekat...');
                 }
