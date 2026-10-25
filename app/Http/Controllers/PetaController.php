@@ -24,13 +24,28 @@ class PetaController extends Controller
 
         $zonaRawan = ZonaRawan::orderByDesc('jumlah_kejadian')->get();
 
-        return view('damkar.peta', compact('posDamkarList', 'zonaRawan'));
+        // Preload data isokron (5, 10, 15 menit) untuk seluruh pos agar render di peta instan tanpa delay network
+        $isokronData = [];
+        foreach ($posDamkarList as $pos) {
+            $file = database_path("data/isokron/{$pos->unit}.json");
+            if (file_exists($file)) {
+                $isokronData[$pos->id] = json_decode((string) file_get_contents($file), true);
+            }
+        }
+
+        return view('damkar.peta', compact('posDamkarList', 'zonaRawan', 'isokronData'));
     }
 
     /** Area jangkauan (isokron) satu pos, mengikuti jalan. Dipanggil peta saat sebuah pos dipilih. */
-    public function isokron(PosDamkar $posDamkar, IsokronService $isokron)
+    public function isokron($posDamkar, IsokronService $isokron)
     {
         try {
+            if (! $posDamkar instanceof PosDamkar) {
+                $posDamkar = PosDamkar::find($posDamkar)
+                    ?? PosDamkar::daftarDefault()->firstWhere('id', (int) $posDamkar)
+                    ?? PosDamkar::first();
+            }
+
             return response()->json($isokron->untuk($posDamkar));
         } catch (Throwable $e) {
             report($e);

@@ -82,6 +82,7 @@
 <script>
     const posDamkar = @json($dataPosDamkar);
     const urlIsokron = @json($urlIsokron);
+    const isokronPreloaded = @json($isokronData ?? []);
 
     const map = L.map('jangkauan-map', { zoomControl: false }).setView([-2.975, 104.76], 12);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -94,7 +95,15 @@
     let layerIsokron = null;
     let permintaanKe = 0;
     let pengendali = null;
-    const simpanan = new Map(); // id pos -> GeoJSON, supaya pindah-pindah pos tidak memanggil ulang
+    const simpanan = new Map(); // id pos -> GeoJSON
+
+    // Isi cache instan dari data preloaded server
+    if (typeof isokronPreloaded === 'object' && isokronPreloaded !== null) {
+        Object.keys(isokronPreloaded).forEach(function (k) {
+            simpanan.set(String(k), isokronPreloaded[k]);
+            simpanan.set(Number(k), isokronPreloaded[k]);
+        });
+    }
 
     function setStatus(html, tampil = true) {
         status.innerHTML = html;
@@ -145,7 +154,11 @@
 
         map.setView([pos.lat, pos.lng], 14);
 
-        if (simpanan.has(pos.id)) { gambarIsokron(simpanan.get(pos.id), pos); return; }
+        const dataAda = simpanan.get(pos.id) || simpanan.get(String(pos.id)) || simpanan.get(Number(pos.id));
+        if (dataAda) {
+            gambarIsokron(dataAda, pos);
+            return;
+        }
 
         const giliran = ++permintaanKe;
         pengendali = new AbortController();
