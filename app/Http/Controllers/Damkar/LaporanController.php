@@ -97,9 +97,43 @@ class LaporanController extends Controller
 
         abort_unless($dapatDiassign, 403, 'Laporan tidak dapat ditugaskan kendaraan lagi.');
 
+        $latLaporan = (float) $laporan->latitude;
+        $lngLaporan = (float) $laporan->longitude;
+
+        // Ambil kendaraan siaga beserta data pos damkarnya
+        $semuaKendaraan = Kendaraan::with('posDamkar')->siaga()->get();
+
+        // Hitung jarak real-time dari pos kendaraan ke titik kejadian (Haversine)
+        $kendaraanTersedia = $semuaKendaraan->map(function ($k) use ($latLaporan, $lngLaporan) {
+            $latPos = (float) ($k->latitude ?? $k->posDamkar?->latitude ?? -2.9761);
+            $lngPos = (float) ($k->longitude ?? $k->posDamkar?->longitude ?? 104.7754);
+
+            if ($latLaporan != 0.0 && $lngLaporan != 0.0) {
+                $dLat = deg2rad($latLaporan - $latPos);
+                $dLon = deg2rad($lngLaporan - $lngPos);
+                $a = sin($dLat / 2) * sin($dLat / 2) +
+                     cos(deg2rad($latPos)) * cos(deg2rad($latLaporan)) *
+                     sin($dLon / 2) * sin($dLon / 2);
+                $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+                $jarak = round(6371 * $c, 1);
+            } else {
+                $jarak = 1.5;
+            }
+
+            $k->jarak_km = $jarak;
+            $k->estimasi_menit = max(2, (int) round(($jarak / 35) * 60)); // asumsi 35 km/jam
+            return $k;
+        })->sortBy('jarak_km')->values();
+
+        // Batasi hanya beberapa (1 sampai 4) kendaraan yang paling dekat
+        $kendaraanTerdekat = $kendaraanTersedia->take(4);
+        $kendaraanLainnya = $kendaraanTersedia->slice(4)->values();
+
         return view('damkar.penugasan-kendaraan', [
             'laporan' => $laporan->load('user'),
-            'kendaraanTersedia' => Kendaraan::siaga()->get(),
+            'kendaraanTersedia' => $kendaraanTerdekat,
+            'kendaraanLainnya' => $kendaraanLainnya,
+            'totalSiaga' => $kendaraanTersedia->count(),
         ]);
     }
 
@@ -132,8 +166,8 @@ class LaporanController extends Controller
     {
         abort_unless($laporan->kendaraan_id !== null, 404, 'Kendaraan belum ditugaskan.');
 
-        $laporan->load(['user', 'kendaraan']);
-        $posDamkar = PosDamkar::first();
+        $laporan->load(['user', 'kendaraan.posDamkar']);
+        $posDamkar = $laporan->kendaraan?->posDamkar ?? PosDamkar::first();
 
         return view('damkar.navigasi-rute', compact('laporan', 'posDamkar'));
     }
