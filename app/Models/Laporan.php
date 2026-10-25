@@ -20,6 +20,7 @@ class Laporan extends Model
     /** @var list<string> */
     protected $fillable = [
         'user_id',
+        'device_id',
         'kendaraan_id',
         'nomor_telepon',
         'latitude',

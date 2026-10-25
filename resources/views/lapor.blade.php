@@ -36,9 +36,10 @@
         <form action="{{ route('lapor.store') }}" method="POST" enctype="multipart/form-data" class="p-4 space-y-4 flex-1">
             @csrf
 
-            <!-- Hidden Input GPS -->
+            <!-- Hidden Input GPS & Device ID -->
             <input type="hidden" name="latitude" id="latitude">
             <input type="hidden" name="longitude" id="longitude">
+            <input type="hidden" name="device_id" id="device_id">
 
             <!-- Lokasi Kebakaran -->
             <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-3">
@@ -386,6 +387,23 @@
         } else {
             mulaiGps();
         }
+
+        // Inisialisasi atau ambil Device ID unik khusus perangkat ini
+        function dapatkanDeviceId() {
+            const KEY = 'sigap_device_id';
+            let devId = localStorage.getItem(KEY);
+            if (!devId) {
+                // Buat unique ID acak bila belum ada di perangkat ini
+                devId = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 10);
+                localStorage.setItem(KEY, devId);
+            }
+            // Simpan juga ke cookie agar controller Laravel dapat membaca langsung
+            document.cookie = KEY + '=' + encodeURIComponent(devId) + '; path=/; max-age=31536000; SameSite=Lax';
+            const inputDev = document.getElementById('device_id');
+            if (inputDev) inputDev.value = devId;
+            return devId;
+        }
+        dapatkanDeviceId();
 
         // Titik kebakaran wajib ditentukan sebelum laporan dikirim
         document.querySelector('form').addEventListener('submit', function(e) {

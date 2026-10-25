@@ -48,8 +48,11 @@ class LaporanController extends Controller
             }
         }
 
+        $deviceId = (string) ($request->input('device_id') ?? $request->cookie('sigap_device_id') ?? $request->header('X-Device-Id') ?? '');
+
         $laporan = Laporan::create([
             'user_id' => $request->user()?->getAuthIdentifier(), // null jika tidak login
+            'device_id' => ! empty($deviceId) ? $deviceId : null,
             'nomor_telepon' => $request->nomor_telepon,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
@@ -61,6 +64,9 @@ class LaporanController extends Controller
 
         // Ingat laporan milik pengunjung yang belum login, agar "Laporan Saya" hanya menampilkan miliknya
         try {
+            if (! empty($deviceId)) {
+                Cookie::queue('sigap_device_id', $deviceId, 60 * 24 * 365);
+            }
             $ids = array_values(array_unique([...$this->idLaporanSaya($request), $laporan->id]));
             $request->session()->put('laporan_ids', $ids);
             Cookie::queue('laporan_ids', json_encode($ids), 60 * 24 * 30);
@@ -118,18 +124,32 @@ class LaporanController extends Controller
     }
 
     /**
-     * Laporan milik pengunjung: yang dikirim dari browser ini (sesi/cookie) + laporan akun yang login.
-     * Digabung (bukan salah satu) supaya laporan tamu tetap terlihat walau sedang login sebagai akun lain.
+     * Laporan milik pengunjung: yang dikirim dari browser ini (device_id / sesi / cookie) + laporan akun yang login.
+     * Dipisah per device/user agar status laporan aktif tidak tertukar antar device/pengguna lain.
      */
     private function laporanSaya(Request $request): Builder
     {
         $userId = $request->user()?->getAuthIdentifier();
+        $deviceId = (string) ($request->cookie('sigap_device_id') ?? $request->header('X-Device-Id') ?? '');
         $idSaya = $this->idLaporanSaya($request);
 
-        return Laporan::query()->where(function ($q) use ($userId, $idSaya) {
-            $q->whereIn('id', $idSaya);
+        return Laporan::query()->where(function ($q) use ($userId, $deviceId, $idSaya) {
+            $hasFilter = false;
+            if (! empty($deviceId)) {
+                $q->where('device_id', $deviceId);
+                $hasFilter = true;
+            }
             if ($userId) {
-                $q->orWhere('user_id', $userId);
+                $hasFilter ? $q->orWhere('user_id', $userId) : $q->where('user_id', $userId);
+                $hasFilter = true;
+            }
+            if (! empty($idSaya)) {
+                $hasFilter ? $q->orWhereIn('id', $idSaya) : $q->whereIn('id', $idSaya);
+                $hasFilter = true;
+            }
+
+            if (! $hasFilter) {
+                $q->whereRaw('0 = 1');
             }
         });
     }
