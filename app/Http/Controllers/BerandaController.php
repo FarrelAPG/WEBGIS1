@@ -10,17 +10,25 @@ class BerandaController extends Controller
     public function index(Request $request)
     {
         $userId = $request->user()?->getAuthIdentifier();
-        $dariCookie = json_decode((string) $request->cookie('laporan_ids'), true);
-        $idSaya = array_values(array_unique(array_map('intval', array_filter(
-            [...(array) $request->session()->get('laporan_ids', []), ...(is_array($dariCookie) ? $dariCookie : [])],
-            'is_numeric'
-        ))));
+        $deviceId = (string) ($request->attributes->get('sigap_device_id')
+            ?? $request->cookie('sigap_device_id')
+            ?? $request->header('X-Device-Id')
+            ?? '');
 
         $laporanTerbaru = Laporan::query()
-            ->where(function ($q) use ($userId, $idSaya) {
-                $q->whereIn('id', $idSaya);
+            ->where(function ($q) use ($userId, $deviceId) {
+                $hasFilter = false;
+                if (! empty($deviceId)) {
+                    $q->where('device_id', $deviceId);
+                    $hasFilter = true;
+                }
                 if ($userId) {
-                    $q->orWhere('user_id', $userId);
+                    $hasFilter ? $q->orWhere('user_id', $userId) : $q->where('user_id', $userId);
+                    $hasFilter = true;
+                }
+
+                if (! $hasFilter) {
+                    $q->whereRaw('0 = 1');
                 }
             })
             ->latest()
@@ -30,6 +38,14 @@ class BerandaController extends Controller
         $laporanAktif = ($laporanTerbaru && $laporanTerbaru->masihBerjalanMasyarakat()) ? $laporanTerbaru : null;
         $totalKejadianAktif = Laporan::whereIn('status', ['pending', 'diproses'])->count();
 
-        return view('beranda', compact('laporanAktif', 'totalKejadianAktif'));
+        // Kebakaran terverifikasi/aktif yang sedang ditangani (notifikasi publik untuk seluruh masyarakat)
+        $kebakaranTerverifikasi = Laporan::with(['kendaraan.posDamkar'])
+            ->whereIn('status', ['diproses', 'pending'])
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->latest()
+            ->get();
+
+        return view('beranda', compact('laporanAktif', 'totalKejadianAktif', 'kebakaranTerverifikasi'));
     }
 }

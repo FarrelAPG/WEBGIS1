@@ -339,5 +339,19 @@
             </div>
         </nav>
     </div>
+
+    <script>
+        (function() {
+            const KEY = 'sigap_device_id';
+            let devId = localStorage.getItem(KEY);
+            if (!devId) {
+                devId = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 10);
+                localStorage.setItem(KEY, devId);
+            }
+            if (!document.cookie.includes(KEY + '=')) {
+                document.cookie = KEY + '=' + encodeURIComponent(devId) + '; path=/; max-age=31536000; SameSite=Lax';
+            }
+        })();
+    </script>
 </body>
 </html>

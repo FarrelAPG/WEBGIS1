@@ -261,6 +261,14 @@ class PetaController extends Controller
             $posDamkarList = PosDamkar::daftarDefault();
         }
 
-        return view('peta', compact('posDamkarList'));
+        // Ambil data kebakaran aktif / terverifikasi untuk dipetakan ke seluruh masyarakat
+        $kebakaranAktif = \App\Models\Laporan::with(['kendaraan.posDamkar'])
+            ->whereIn('status', ['diproses', 'pending'])
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->latest()
+            ->get();
+
+        return view('peta', compact('posDamkarList', 'kebakaranAktif'));
     }
 }
