@@ -60,3 +60,4 @@ if ($isNewDb) {
 
 // 6. Tangani request web
 $app->handleRequest(Request::capture());
+
