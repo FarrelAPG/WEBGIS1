@@ -4,6 +4,8 @@ define('LARAVEL_START', microtime(true));
 
 // 1. Buat semua folder /tmp yang dibutuhkan Laravel
 $tmpDirs = [
+    '/tmp/storage/app/public/laporan-foto',
+    '/tmp/storage/app/private',
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/sessions',
     '/tmp/storage/framework/cache/data',
@@ -30,6 +32,12 @@ if ($isNewDb) {
     } else {
         @touch($destDb);
     }
+}
+
+// Pastikan file dan direktori database SELALU writable untuk SQLite insert/update
+@chmod('/tmp/database', 0777);
+if (file_exists($destDb)) {
+    @chmod($destDb, 0666);
 }
 
 // 3. Set seluruh environment variable yang dibutuhkan
@@ -66,6 +74,9 @@ if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php'
 
 /** @var \Illuminate\Foundation\Application $app */
 $app = require_once __DIR__ . '/../bootstrap/app.php';
+
+// Alihkan direktori storage ke /tmp/storage yang writable
+$app->useStoragePath('/tmp/storage');
 
 // 6. Jalankan migrasi & seeder jika database SQLite baru (cold start pertama)
 if ($isNewDb) {

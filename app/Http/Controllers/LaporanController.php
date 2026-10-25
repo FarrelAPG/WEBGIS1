@@ -40,7 +40,12 @@ class LaporanController extends Controller
 
         $fotoPath = null;
         if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('laporan-foto', 'public');
+            try {
+                $fotoPath = $request->file('foto')->store('laporan-foto', 'public');
+            } catch (\Throwable $e) {
+                report($e);
+                $fotoPath = null;
+            }
         }
 
         $laporan = Laporan::create([
@@ -55,13 +60,15 @@ class LaporanController extends Controller
         ]);
 
         // Ingat laporan milik pengunjung yang belum login, agar "Laporan Saya" hanya menampilkan miliknya
-        // Simpan di sesi DAN cookie (30 hari): tamu tanpa akun tidak kehilangan laporannya
-        // saat sesi di-reset (mis. login/logout akun damkar di browser yang sama).
-        $ids = array_values(array_unique([...$this->idLaporanSaya($request), $laporan->id]));
-        $request->session()->put('laporan_ids', $ids);
-        Cookie::queue('laporan_ids', json_encode($ids), 60 * 24 * 30);
+        try {
+            $ids = array_values(array_unique([...$this->idLaporanSaya($request), $laporan->id]));
+            $request->session()->put('laporan_ids', $ids);
+            Cookie::queue('laporan_ids', json_encode($ids), 60 * 24 * 30);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
-        return redirect()->route('lapor.sukses', $laporan);
+        return redirect()->route('lapor.sukses', ['id' => $laporan->id]);
     }
 
     public function sukses($id)
