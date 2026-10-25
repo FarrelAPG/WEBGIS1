@@ -1,27 +1,24 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-
 define('LARAVEL_START', microtime(true));
 
-// 1. Buat folder sementara di /tmp untuk cache & views
+// 1. Buat semua folder /tmp yang dibutuhkan Laravel
 $tmpDirs = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/sessions',
     '/tmp/storage/framework/cache/data',
     '/tmp/storage/logs',
     '/tmp/database',
+    '/tmp/bootstrap/cache',
 ];
 
 foreach ($tmpDirs as $dir) {
     if (!is_dir($dir)) {
-        @mkdir($dir, 0755, true);
+        @mkdir($dir, 0777, true);
     }
 }
 
-// 2. Siapkan file database SQLite di /tmp
+// 2. Siapkan file database SQLite di /tmp (reset per cold start)
 $destDb = '/tmp/database/database.sqlite';
 $isNewDb = !file_exists($destDb) || filesize($destDb) === 0;
 
@@ -29,35 +26,50 @@ if (!file_exists($destDb)) {
     @touch($destDb);
 }
 
-// 3. Konfigurasi path environment runtime Vercel
-putenv("DB_DATABASE={$destDb}");
-$_ENV['DB_DATABASE'] = $destDb;
-$_SERVER['DB_DATABASE'] = $destDb;
+// 3. Set seluruh environment variable yang dibutuhkan di /tmp (read-only filesystem Vercel)
+$envOverrides = [
+    'DB_DATABASE'         => $destDb,
+    'VIEW_COMPILED_PATH'  => '/tmp/storage/framework/views',
+    'SESSION_DRIVER'      => 'cookie',
+    'CACHE_STORE'         => 'array',
+    'LOG_CHANNEL'         => 'stderr',
+    'APP_ENV'             => 'production',
+    'APP_DEBUG'           => 'false',
+    'APP_SERVICES_CACHE'  => '/tmp/services.php',
+    'APP_PACKAGES_CACHE'  => '/tmp/packages.php',
+    'APP_CONFIG_CACHE'    => '/tmp/config.php',
+    'APP_ROUTES_CACHE'    => '/tmp/routes.php',
+    'APP_EVENTS_CACHE'    => '/tmp/events.php',
+];
 
-putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
-$_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
-$_SERVER['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
+foreach ($envOverrides as $key => $value) {
+    putenv("{$key}={$value}");
+    $_ENV[$key]    = $value;
+    $_SERVER[$key] = $value;
+}
 
-putenv('APP_SERVICES_CACHE=/tmp/services.php');
-putenv('APP_PACKAGES_CACHE=/tmp/packages.php');
-putenv('APP_CONFIG_CACHE=/tmp/config.php');
-putenv('APP_ROUTES_CACHE=/tmp/routes.php');
-
-// 4. Load autoloader & bootstrap Laravel
+// 4. Load Composer autoloader & bootstrap Laravel
 require __DIR__ . '/../vendor/autoload.php';
 
-/** @var Application $app */
+// 5. Mode maintenance
+if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php')) {
+    require $maintenance;
+}
+
+/** @var \Illuminate\Foundation\Application $app */
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-// 5. Jalankan migrasi & seeder jika database baru dibuat di /tmp
+// 6. Jalankan migrasi & seeder jika database SQLite baru (cold start pertama)
 if ($isNewDb) {
     try {
-        Artisan::call('migrate', ['--force' => true, '--seed' => true]);
+        $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+        $kernel->call('migrate', ['--force' => true]);
+        $kernel->call('db:seed', ['--force' => true]);
     } catch (\Throwable $e) {
-        // Fallback jika migrasi gagal
+        // Gagal senyap — request tetap diproses (halaman tanpa DB tetap bisa muncul)
+        error_log('[SIGAP Vercel] Migrasi gagal: ' . $e->getMessage());
     }
 }
 
-// 6. Tangani request web
-$app->handleRequest(Request::capture());
-
+// 7. Tangani request web
+$app->handleRequest(\Illuminate\Http\Request::capture());
