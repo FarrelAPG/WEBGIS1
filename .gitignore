@@ -2,6 +2,7 @@
 .DS_Store
 Webgis1
 *.sqlite
+!database/database.sqlite
 .env
 .env.backup
 .env.production

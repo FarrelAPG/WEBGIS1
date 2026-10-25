@@ -20,10 +20,16 @@ foreach ($tmpDirs as $dir) {
 
 // 2. Siapkan file database SQLite di /tmp
 $destDb = '/tmp/database/database.sqlite';
+$srcDb = __DIR__ . '/../database/database.sqlite';
 $isNewDb = !file_exists($destDb) || filesize($destDb) === 0;
 
-if (!file_exists($destDb)) {
-    @touch($destDb);
+if ($isNewDb) {
+    if (file_exists($srcDb) && filesize($srcDb) > 0) {
+        @copy($srcDb, $destDb);
+        $isNewDb = false;
+    } else {
+        @touch($destDb);
+    }
 }
 
 // 3. Set seluruh environment variable yang dibutuhkan

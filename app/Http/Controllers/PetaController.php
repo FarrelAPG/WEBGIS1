@@ -13,7 +13,15 @@ class PetaController extends Controller
 {
     public function index()
     {
-        $posDamkarList = PosDamkar::orderBy('nama')->get();
+        try {
+            $posDamkarList = PosDamkar::orderBy('nama')->get();
+            if ($posDamkarList->isEmpty()) {
+                $posDamkarList = PosDamkar::daftarDefault();
+            }
+        } catch (Throwable $e) {
+            $posDamkarList = PosDamkar::daftarDefault();
+        }
+
         $zonaRawan = ZonaRawan::orderByDesc('jumlah_kejadian')->get();
 
         return view('damkar.peta', compact('posDamkarList', 'zonaRawan'));
@@ -199,7 +207,14 @@ class PetaController extends Controller
 
     public function publik()
     {
-        $posDamkarList = PosDamkar::orderBy('nama')->get();
+        try {
+            $posDamkarList = PosDamkar::orderBy('nama')->get();
+            if ($posDamkarList->isEmpty()) {
+                $posDamkarList = PosDamkar::daftarDefault();
+            }
+        } catch (Throwable $e) {
+            $posDamkarList = PosDamkar::daftarDefault();
+        }
 
         return view('peta', compact('posDamkarList'));
     }
