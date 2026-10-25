@@ -38,7 +38,6 @@ $envOverrides = [
     'DB_DATABASE'         => $destDb,
     'VIEW_COMPILED_PATH'  => '/tmp/storage/framework/views',
     'SESSION_DRIVER'      => 'cookie',
-    'SESSION_ENCRYPT'     => 'false',
     'CACHE_STORE'         => 'array',
     'LOG_CHANNEL'         => 'stderr',
     'APP_ENV'             => 'production',

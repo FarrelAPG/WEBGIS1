@@ -1,4 +1,32 @@
 <x-guest-layout>
+    <!-- Header SIGAP DAMKAR -->
+    <div class="mb-5 text-center">
+        <h2 class="text-xl font-black tracking-tight text-slate-900">Portal Petugas Damkar</h2>
+        <p class="text-xs text-slate-500 mt-1">Masuk untuk mengakses Dashboard Operasional Damkar</p>
+    </div>
+
+    <!-- Kotak Demo / Quick Login -->
+    <div class="mb-5 rounded-xl border border-red-200 bg-red-50/80 p-3.5 text-xs text-slate-700">
+        <div class="flex items-center justify-between gap-2">
+            <span class="inline-flex items-center gap-1 font-bold text-red-700">
+                <span class="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
+                Akun Demo Petugas:
+            </span>
+            <button type="button" onclick="isiAkunDemo()" class="font-extrabold text-[#bd101b] hover:underline">
+                Isi ke Form ✍️
+            </button>
+        </div>
+        <div class="mt-2 space-y-0.5 font-mono text-[11px] text-slate-600">
+            <div>Email: <strong class="text-slate-900">damkar@sigap.test</strong></div>
+            <div>Password: <strong class="text-slate-900">password</strong></div>
+        </div>
+        <div class="mt-3">
+            <a href="{{ route('login.damkar.demo') }}" class="flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#bd101b] px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#a00e17]">
+                <span>⚡ 1-Klik Masuk sebagai Petugas Damkar</span>
+            </a>
+        </div>
+    </div>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -27,21 +55,26 @@
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-red-600 shadow-sm focus:ring-red-500" name="remember" checked>
+                <span class="ms-2 text-xs text-gray-600">{{ __('Ingat saya') }}</span>
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+        <div class="flex items-center justify-between mt-5">
+            <a class="text-xs text-slate-500 hover:text-slate-800" href="{{ url('/') }}">
+                ← Kembali ke Portal
+            </a>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
+            <x-primary-button class="bg-[#bd101b] hover:bg-[#a00e17] focus:bg-[#a00e17] active:bg-[#850b13]">
+                {{ __('Masuk') }}
             </x-primary-button>
         </div>
     </form>
+
+    <script>
+        function isiAkunDemo() {
+            document.getElementById('email').value = 'damkar@sigap.test';
+            document.getElementById('password').value = 'password';
+        }
+    </script>
 </x-guest-layout>

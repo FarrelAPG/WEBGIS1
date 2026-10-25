@@ -28,7 +28,35 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->user()?->role === 'damkar') {
+            return redirect()->intended(route('damkar.dashboard', absolute: false));
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+    /**
+     * Login cepat 1-klik sebagai Admin Damkar (demo)
+     */
+    public function demoDamkar(Request $request): RedirectResponse
+    {
+        $admin = \App\Models\User::where('email', 'damkar@sigap.test')->first();
+
+        if (! $admin) {
+            $admin = \App\Models\User::firstOrCreate(
+                ['email' => 'damkar@sigap.test'],
+                [
+                    'name' => 'Admin Damkar',
+                    'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                    'role' => 'damkar',
+                ]
+            );
+        }
+
+        Auth::login($admin, true);
+        $request->session()->regenerate();
+
+        return redirect()->route('damkar.dashboard');
     }
 
     /**
