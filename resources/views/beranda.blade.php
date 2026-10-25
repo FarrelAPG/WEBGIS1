@@ -51,9 +51,16 @@
                         <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                         <span>Portal</span>
                     </a>
-                    <button type="button" aria-label="Notifikasi" onclick="location.href='{{ route('laporan.saya') }}'" class="relative rounded-full p-1.5 text-[#473a38] transition hover:bg-black/5">
+                    <button type="button" aria-label="Notifikasi Kebakaran" onclick="toggleModalNotif(true)" class="relative rounded-full p-1.5 text-[#473a38] transition hover:bg-black/5">
                         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
-                        <span class="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#c41621] ring-2 ring-[#fffaf8]"></span>
+                        @if(isset($kebakaranTerverifikasi) && $kebakaranTerverifikasi->isNotEmpty())
+                            <span class="absolute -top-0.5 -right-0.5 flex h-4 w-4">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-4 w-4 bg-[#c41621] text-[9px] font-black text-white items-center justify-center ring-2 ring-[#fffaf8]">
+                                    {{ $kebakaranTerverifikasi->count() }}
+                                </span>
+                            </span>
+                        @endif
                     </button>
                     <a href="{{ route('masyarakat.profile') }}" class="h-9 w-9 sm:h-10 sm:w-10 overflow-hidden rounded-full border-2 border-[#e7b5ae] bg-white p-0.5 transition hover:ring-2 hover:ring-[#c41621]/30" aria-label="Profil">
                         <img src="{{ asset('images/avatar.svg') }}" alt="Foto profil" class="h-full w-full rounded-full object-cover">
@@ -85,6 +92,37 @@
                         </button>
                     </div>
                 </section>
+
+                {{-- Banner Peringatan Kebakaran Aktif Publik --}}
+                @if(isset($kebakaranTerverifikasi) && $kebakaranTerverifikasi->isNotEmpty())
+                    <section class="overflow-hidden rounded-2xl border-2 border-red-500 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white shadow-xl shadow-red-600/25" aria-labelledby="live-alert-title">
+                        <div class="p-4 sm:p-5 flex items-start gap-3.5">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl shadow">
+                                🔥
+                            </span>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-white text-red-700 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full">
+                                        Peringatan Kebakaran Aktif
+                                    </span>
+                                    <span class="text-xs text-white/90 font-bold">• Terverifikasi Damkar</span>
+                                </div>
+                                <h3 class="mt-1 text-sm sm:text-base font-extrabold leading-snug line-clamp-1">
+                                    {{ $kebakaranTerverifikasi->first()->alamat }}
+                                </h3>
+                                <p class="text-[11px] text-white/90 mt-0.5">
+                                    Terdeteksi {{ $kebakaranTerverifikasi->count() }} kebakaran aktif sedang ditangani Damkar. Warga sekitar dihimbau waspada &amp; hindari lokasi.
+                                </p>
+                                <div class="mt-3 flex items-center gap-2">
+                                    <a href="{{ route('peta', ['fokus' => $kebakaranTerverifikasi->first()->id]) }}" class="inline-flex items-center gap-1.5 bg-white text-red-700 hover:bg-red-50 px-3.5 py-1.5 rounded-xl text-xs font-black shadow transition">
+                                        <span>Pantau Titik Api di Peta 🗺️</span>
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                @endif
 
                 {{-- Responsive Grid: Stacked di Mobile, 2 Kolom Berdampingan di Desktop (lg:grid lg:grid-cols-2 lg:gap-8) --}}
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
@@ -429,6 +467,89 @@
 
             deteksiLokasi();
         })();
+
+        function toggleModalNotif(buka) {
+            const modal = document.getElementById('modal-notif');
+            if (modal) {
+                modal.classList.toggle('hidden', !buka);
+                document.body.classList.toggle('overflow-hidden', buka);
+            }
+        }
     </script>
+
+    <!-- Modal Notifikasi Kebakaran Real-Time -->
+    <div id="modal-notif" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[85vh]">
+            <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-[#fffaf8]">
+                <div class="flex items-center gap-2.5">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-100 text-red-600 text-lg">
+                        🔔
+                    </span>
+                    <div>
+                        <h3 class="text-base font-black text-slate-900">Pusat Informasi &amp; Peringatan</h3>
+                        <p class="text-xs text-slate-500">Notifikasi resmi bencana kebakaran Kota Palembang</p>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleModalNotif(false)" class="p-1.5 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-3.5 flex-1">
+                @if(isset($kebakaranTerverifikasi) && $kebakaranTerverifikasi->isNotEmpty())
+                    <div class="flex items-center justify-between text-xs font-bold text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+                        <span>🔥 {{ $kebakaranTerverifikasi->count() }} Kebakaran Sedang Ditangani</span>
+                        <span class="text-[10px] text-red-500 uppercase">Siaga 24 Jam</span>
+                    </div>
+
+                    @foreach($kebakaranTerverifikasi as $k)
+                        <div class="rounded-2xl border-2 border-red-200 bg-white p-4 shadow-sm hover:border-red-400 transition space-y-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="inline-flex items-center gap-1 rounded-full bg-red-600 px-2.5 py-0.5 text-[10px] font-black text-white uppercase tracking-wider">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+                                    {{ $k->status === 'diproses' ? 'Terverifikasi & Ditangani' : 'Laporan Diterima' }}
+                                </span>
+                                <span class="text-[11px] font-semibold text-slate-400">{{ $k->created_at->diffForHumans() }}</span>
+                            </div>
+
+                            <div>
+                                <h4 class="text-sm font-extrabold text-slate-900 leading-snug">{{ $k->alamat }}</h4>
+                                @if($k->keterangan)
+                                    <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ $k->keterangan }}</p>
+                                @endif
+                            </div>
+
+                            @if($k->kendaraan)
+                                <div class="text-[11px] font-semibold text-slate-700 bg-slate-50 p-2 rounded-lg flex items-center gap-1.5">
+                                    <span>🚒 Armada Ditugaskan:</span>
+                                    <span class="text-[#bd101b] font-bold">{{ $k->kendaraan->kode }} ({{ $k->kendaraan->nama }})</span>
+                                </div>
+                            @endif
+
+                            <div class="pt-1">
+                                <a href="{{ route('peta', ['fokus' => $k->id]) }}" class="flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#bd101b] py-2 px-3 text-xs font-bold text-white shadow hover:bg-[#a00e17] transition">
+                                    <span>Buka Titik Api di Peta 🗺️</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center space-y-2">
+                        <span class="text-3xl">🛡️</span>
+                        <h4 class="text-sm font-bold text-slate-800">Tidak Ada Kebakaran Aktif</h4>
+                        <p class="text-xs text-slate-500">Seluruh wilayah Kota Palembang saat ini terpantau aman dan terkendali. Tetap utamakan keselamatan.</p>
+                    </div>
+                @endif
+
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="text-slate-500">Pernah mengirim laporan?</span>
+                    <a href="{{ route('laporan.saya') }}" class="font-bold text-[#bd101b] hover:underline">
+                        Buka Laporan Saya →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
