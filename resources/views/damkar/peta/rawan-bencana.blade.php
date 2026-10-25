@@ -22,7 +22,7 @@
 <header class="space-y-1">
     <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#E52329]">Modul Peta</p>
     <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Peta Daerah Rawan Kebakaran</h1>
-    <p class="text-sm text-slate-500">Sebaran hotspot satelit, cluster risiko, dan ringkasan kekuatan titik api.</p>
+    <p class="text-sm text-slate-500">Sebaran hotspot satelit VIIRS di Palembang, cluster risiko, dan ringkasan kekuatan titik api.</p>
 </header>
 
 @include('damkar.peta._navigation')
@@ -30,6 +30,17 @@
 <section class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
     <div class="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="flex flex-wrap items-center gap-3 border-b border-slate-100 px-4 py-3">
+            <form method="GET" action="{{ route('damkar.peta.rawan-bencana') }}" class="flex items-center gap-2">
+                <label for="filter-bulan" class="text-xs font-bold text-slate-700">Bulan:</label>
+                <select id="filter-bulan"
+                        name="month"
+                        onchange="this.form.submit()"
+                        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 focus:border-red-400 focus:outline-none focus:ring-2 focus:ring-red-100">
+                    @foreach ($monthOptions as $month => $label)
+                        <option value="{{ $month }}" @selected($selectedMonth === $month)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </form>
             <span class="text-xs font-bold text-slate-700">Filter Risiko:</span>
             <label class="flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-slate-600">
                 <input type="checkbox" id="filter-tinggi" checked class="h-3.5 w-3.5 rounded accent-red-600">
@@ -40,7 +51,8 @@
                 Risiko Sedang
             </label>
             <span class="ml-auto text-[11px] text-slate-400">
-                Akuisisi: {{ $tanggalDataset ?: 'Tidak tersedia' }}
+                Hotspot bulan terpilih:
+                {{ $tanggalDataset ?: 'Tidak tersedia' }}
             </span>
         </div>
 
@@ -59,7 +71,7 @@
                 <svg class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
                 Centroid cluster
             </span>
-            <span class="ml-auto text-[10px] text-slate-400">Sumber: dataset hotspot Terra / MODIS</span>
+            <span class="ml-auto text-[10px] text-slate-400">Sumber: dataset hotspot SNPP / VIIRS</span>
         </div>
     </div>
 
@@ -94,6 +106,14 @@
                         $warnaTag = $tinggi ? 'bg-red-600 text-white' : 'bg-amber-500 text-white';
                         $labelTag = $tinggi ? 'Kritis' : 'Sedang';
                         $tingkatRisiko = $tinggi ? 'tinggi' : 'sedang';
+                        $confidenceKategori = collect($zona['confidenceKategori'])
+                            ->filter(fn (int $jumlah): bool => $jumlah > 0)
+                            ->map(fn (int $jumlah, string $kategori): string => [
+                                'l' => 'Rendah',
+                                'n' => 'Nominal',
+                                'h' => 'Tinggi',
+                            ][$kategori].' '.$jumlah)
+                            ->implode(', ');
                     @endphp
                     <li data-risk-level="{{ $tingkatRisiko }}">
                         <button type="button"
@@ -108,7 +128,12 @@
                                     {{ $zona['jumlah'] }} hotspot
                                     · radius {{ number_format($zona['radius'] / 1000, 1) }} km
                                     · FRP {{ number_format($zona['rataFrp'], 1) }} MW
-                                    · confidence {{ number_format($zona['rataConfidence'], 1) }}%
+                                    · confidence
+                                    @if ($zona['rataConfidence'] !== null)
+                                        {{ number_format($zona['rataConfidence'], 1) }}%
+                                    @else
+                                        {{ $confidenceKategori ?: 'Tidak tersedia' }}
+                                    @endif
                                 </span>
                                 <span class="mt-0.5 block text-[10px] text-slate-400">
                                     {{ number_format($zona['lat'], 5) }}, {{ number_format($zona['lng'], 5) }}
@@ -135,7 +160,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 const ZONA_DATA = {{ \Illuminate\Support\Js::from($zonaRawan) }};
-const map = L.map('rawan-map', { zoomControl: false }).setView([-3.3, 104.9], 9);
+const HOTSPOT_MARKER_MIN_ZOOM = 14;
+const map = L.map('rawan-map', { zoomControl: false }).setView([-2.98, 104.75], 10);
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -151,11 +177,24 @@ const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => (
     "'": '&#039;'
 }[character]));
 const layerMap = new Map();
+const HOTSPOT_DATA = ZONA_DATA.flatMap((zona) => zona.hotspots.map((hotspot) => ({
+    ...hotspot,
+    zonaId: zona.id,
+    tinggi: zona.tinggi
+})));
 
 function clusterPopup(zona) {
     const warna = zona.tinggi ? '#dc2626' : '#f59e0b';
     const waktuAkuisisi = [...new Set(zona.hotspots.map((hotspot) => `${hotspot.tanggal} ${hotspot.waktu}`))].join(', ');
     const satelit = [...new Set(zona.hotspots.map((hotspot) => hotspot.satelit))].join(', ');
+    const confidenceCategories = [
+        ['Rendah', zona.confidenceKategori.l],
+        ['Nominal', zona.confidenceKategori.n],
+        ['Tinggi', zona.confidenceKategori.h]
+    ].filter(([, count]) => count > 0).map(([label, count]) => `${label} ${count}`).join(', ');
+    const confidence = zona.rataConfidence !== null
+        ? `${zona.rataConfidence.toFixed(1)}%`
+        : (confidenceCategories || 'Tidak tersedia');
 
     return `<div style="min-width:210px;font-family:sans-serif;font-size:12px;">
         <p style="font-weight:800;font-size:13px;margin:0 0 6px;">${escapeHtml(zona.nama)}</p>
@@ -165,7 +204,7 @@ function clusterPopup(zona) {
             <tr><td style="color:#64748b;padding:2px 0;">Satelit</td><td style="font-weight:700;padding:2px 0;">${escapeHtml(satelit)}</td></tr>
             <tr><td style="color:#64748b;padding:2px 0;">Radius</td><td style="font-weight:700;padding:2px 0;">${(zona.radius / 1000).toFixed(1)} km</td></tr>
             <tr><td style="color:#64748b;padding:2px 0;">Rata-rata FRP</td><td style="font-weight:700;padding:2px 0;">${zona.rataFrp.toFixed(1)} MW</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0;">Confidence</td><td style="font-weight:700;padding:2px 0;">${zona.rataConfidence.toFixed(1)}%</td></tr>
+            <tr><td style="color:#64748b;padding:2px 0;">Confidence</td><td style="font-weight:700;padding:2px 0;">${escapeHtml(confidence)}</td></tr>
             <tr><td style="color:#64748b;padding:2px 0;">Koordinat</td><td style="font-weight:700;padding:2px 0;">${zona.lat.toFixed(5)}, ${zona.lng.toFixed(5)}</td></tr>
             <tr><td style="color:#64748b;padding:2px 0;">Status</td><td style="color:${warna};font-weight:700;padding:2px 0;">${zona.tinggi ? 'Risiko Tinggi' : 'Risiko Sedang'}</td></tr>
         </table>
@@ -173,12 +212,17 @@ function clusterPopup(zona) {
 }
 
 function hotspotPopup(hotspot) {
+    const confidenceLabels = { l: 'Rendah (l)', n: 'Nominal (n)', h: 'Tinggi (h)' };
+    const confidence = hotspot.confidence !== null
+        ? `${hotspot.confidence.toFixed(0)}%`
+        : (confidenceLabels[hotspot.confidenceKategori] || 'Tidak tersedia');
+
     return `<div style="min-width:190px;font-family:sans-serif;font-size:12px;">
         <p style="font-weight:800;font-size:13px;margin:0 0 6px;">Hotspot ${escapeHtml(hotspot.satelit)}</p>
         <table style="width:100%;border-collapse:collapse;">
             <tr><td style="color:#64748b;padding:2px 0;">Akuisisi</td><td style="font-weight:700;padding:2px 0;">${escapeHtml(hotspot.tanggal)} ${escapeHtml(hotspot.waktu)}</td></tr>
             <tr><td style="color:#64748b;padding:2px 0;">FRP</td><td style="font-weight:700;padding:2px 0;">${hotspot.frp.toFixed(1)} MW</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0;">Confidence</td><td style="font-weight:700;padding:2px 0;">${hotspot.confidence.toFixed(0)}%</td></tr>
+            <tr><td style="color:#64748b;padding:2px 0;">Confidence</td><td style="font-weight:700;padding:2px 0;">${escapeHtml(confidence)}</td></tr>
             <tr><td style="color:#64748b;padding:2px 0;">Koordinat</td><td style="font-weight:700;padding:2px 0;">${hotspot.lat.toFixed(5)}, ${hotspot.lng.toFixed(5)}</td></tr>
         </table>
     </div>`;
@@ -187,6 +231,7 @@ function hotspotPopup(hotspot) {
 ZONA_DATA.forEach((zona) => {
     const warna = zona.tinggi ? '#dc2626' : '#f59e0b';
     const layer = L.layerGroup();
+    const hotspotLayer = L.layerGroup();
     const circle = L.circle([zona.lat, zona.lng], {
         radius: zona.radius,
         color: warna,
@@ -206,18 +251,22 @@ ZONA_DATA.forEach((zona) => {
 
     layer.addLayer(circle);
     layer.addLayer(centroid);
-    zona.hotspots.forEach((hotspot) => {
-        layer.addLayer(L.circleMarker([hotspot.lat, hotspot.lng], {
-            radius: 5,
-            color: warna,
-            weight: 1.5,
-            fillColor: '#fff',
-            fillOpacity: 1
-        }).bindPopup(hotspotPopup(hotspot)));
-    });
-
     layer.addTo(map);
-    layerMap.set(zona.id, { layer, centroid, zona });
+    layerMap.set(zona.id, { layer, hotspotLayer, centroid, zona });
+});
+
+HOTSPOT_DATA.forEach((hotspot) => {
+    const warna = hotspot.tinggi ? '#dc2626' : '#f59e0b';
+    const zona = layerMap.get(hotspot.zonaId);
+    const marker = L.circleMarker([hotspot.lat, hotspot.lng], {
+        radius: 5,
+        color: warna,
+        weight: 1.5,
+        fillColor: '#fff',
+        fillOpacity: 1
+    }).bindPopup(hotspotPopup(hotspot));
+
+    zona.hotspotLayer.addLayer(marker);
 });
 
 function focusZona(id) {
@@ -238,13 +287,21 @@ function updateFilter() {
     const tampilTinggi = document.getElementById('filter-tinggi').checked;
     const tampilSedang = document.getElementById('filter-sedang').checked;
 
-    layerMap.forEach(({ layer, zona }) => {
+    layerMap.forEach(({ layer, hotspotLayer, zona }) => {
         const tampil = zona.tinggi ? tampilTinggi : tampilSedang;
 
         if (tampil && !map.hasLayer(layer)) {
             map.addLayer(layer);
         } else if (!tampil && map.hasLayer(layer)) {
             map.removeLayer(layer);
+        }
+
+        const tampilkanHotspot = tampil && map.getZoom() >= HOTSPOT_MARKER_MIN_ZOOM;
+
+        if (tampilkanHotspot && !map.hasLayer(hotspotLayer)) {
+            map.addLayer(hotspotLayer);
+        } else if (!tampilkanHotspot && map.hasLayer(hotspotLayer)) {
+            map.removeLayer(hotspotLayer);
         }
     });
 
@@ -259,5 +316,6 @@ document.querySelectorAll('[data-zone-id]').forEach((button) => {
 });
 document.getElementById('filter-tinggi').addEventListener('change', updateFilter);
 document.getElementById('filter-sedang').addEventListener('change', updateFilter);
+map.on('zoomend', updateFilter);
 </script>
 @endsection

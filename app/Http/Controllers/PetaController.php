@@ -7,6 +7,8 @@ use App\Models\ZonaRawan;
 use App\Services\HotspotZoneService;
 use App\Services\IsokronService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 class PetaController extends Controller
@@ -200,23 +202,51 @@ class PetaController extends Controller
         return view('damkar.peta.sumber-air', compact('sumberAir'));
     }
 
-    public function rawanBencana(HotspotZoneService $hotspotZones): View
+    public function rawanBencana(Request $request, HotspotZoneService $hotspotZones): View
     {
-        $zonaRawan = collect($hotspotZones->clusters())
+        $selectedMonth = $request->validate([
+            'month' => ['nullable', 'date_format:Y-m'],
+        ])['month'] ?? now()->format('Y-m');
+        $mapData = $hotspotZones->mapData($selectedMonth);
+        $request->validate([
+            'month' => ['nullable', Rule::in($mapData['months'])],
+        ]);
+        $zonaRawan = collect($mapData['clusters'])
             ->sortByDesc('jumlah')
             ->values();
+        $hotspots = collect($mapData['hotspots']);
+        $dates = $hotspots->pluck('tanggal')->unique()->sort()->values();
+        $monthNames = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
+        $monthOptions = collect($mapData['months'])->mapWithKeys(
+            fn (string $month): array => [
+                $month => $monthNames[(int) substr($month, 5, 2)].' '.substr($month, 0, 4),
+            ],
+        );
 
         return view('damkar.peta.rawan-bencana', [
             'zonaRawan' => $zonaRawan,
-            'totalHotspot' => $zonaRawan->sum('jumlah'),
+            'hotspots' => $hotspots,
+            'monthOptions' => $monthOptions,
+            'selectedMonth' => $selectedMonth ?? '',
+            'totalHotspot' => $hotspots->count(),
             'jumlahZonaKritis' => $zonaRawan->where('tinggi', true)->count(),
             'jumlahZonaSedang' => $zonaRawan->where('tinggi', false)->count(),
-            'tanggalDataset' => $zonaRawan
-                ->flatMap(static fn (array $zona): array => $zona['hotspots'])
-                ->pluck('tanggal')
-                ->unique()
-                ->sort()
-                ->implode(', '),
+            'tanggalDataset' => $dates->isEmpty()
+                ? ''
+                : ($dates->count() === 1 ? $dates->first() : $dates->first().' s.d. '.$dates->last()),
         ]);
     }
 

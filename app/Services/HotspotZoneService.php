@@ -15,16 +15,7 @@ class HotspotZoneService
     private const ZONE_BUFFER_METERS = 500;
 
     /**
-     * @return list<array{
-     *     id: int,
-     *     nama: string,
-     *     lat: float,
-     *     lng: float,
-     *     radius: int,
-     *     jumlah: int,
-     *     rataFrp: float,
-     *     rataConfidence: float,
-     *     tinggi: bool,
+     * @return array{
      *     hotspots: list<array{
      *         lat: float,
      *         lng: float,
@@ -32,11 +23,35 @@ class HotspotZoneService
      *         waktu: string,
      *         satelit: string,
      *         frp: float,
-     *         confidence: float
+     *         confidence: float|null,
+     *         confidenceKategori: string|null
+     *     }>,
+     *     months: list<string>,
+     *     clusters: list<array{
+     *         id: int,
+     *         nama: string,
+     *         lat: float,
+     *         lng: float,
+     *         radius: int,
+     *         jumlah: int,
+     *         rataFrp: float,
+     *         rataConfidence: float|null,
+     *         confidenceKategori: array{l: int, n: int, h: int},
+     *         tinggi: bool,
+     *         hotspots: list<array{
+     *             lat: float,
+     *             lng: float,
+     *             tanggal: string,
+     *             waktu: string,
+     *             satelit: string,
+     *             frp: float,
+     *             confidence: float|null,
+     *             confidenceKategori: string|null
+     *         }>
      *     }>
-     * }>
+     * }
      */
-    public function clusters(): array
+    public function mapData(?string $month = null): array
     {
         $path = base_path('database/data/hotspots_palembang.csv');
 
@@ -80,6 +95,7 @@ class HotspotZoneService
             }
 
             $hotspots = [];
+            $availableMonths = [];
 
             while (($row = fgetcsv($file, null, ',', '"', '\\')) !== false) {
                 if ($row === [] || $row === [null]) {
@@ -92,7 +108,23 @@ class HotspotZoneService
 
                 $latitude = $this->requiredFloat($value('latitude'), 'latitude');
                 $longitude = $this->requiredFloat($value('longitude'), 'longitude');
-                $confidence = $this->requiredFloat($value('confidence'), 'confidence');
+
+                if (
+                    $latitude < -3.10
+                    || $latitude > -2.85
+                    || $longitude < 104.60
+                    || $longitude > 104.90
+                ) {
+                    continue;
+                }
+
+                $confidenceValue = strtolower($value('confidence'));
+                $confidence = is_numeric($confidenceValue)
+                    ? $this->requiredFloat($confidenceValue, 'confidence')
+                    : null;
+                $confidenceCategory = in_array($confidenceValue, ['l', 'n', 'h'], true)
+                    ? $confidenceValue
+                    : null;
                 $frp = $this->requiredFloat($value('frp'), 'frp');
                 $date = $value('acq_date');
                 $time = $value('acq_time');
@@ -103,7 +135,11 @@ class HotspotZoneService
                     throw new UnexpectedValueException('Dataset hotspot memiliki koordinat di luar rentang.');
                 }
 
-                if ($confidence < 0 || $confidence > 100 || $frp < 0) {
+                if (
+                    ($confidence !== null && ($confidence < 0 || $confidence > 100))
+                    || ($confidence === null && $confidenceCategory === null)
+                    || $frp < 0
+                ) {
                     throw new UnexpectedValueException('Dataset hotspot memiliki nilai FRP atau confidence tidak valid.');
                 }
 
@@ -131,13 +167,29 @@ class HotspotZoneService
                     'satelit' => $satellite,
                     'frp' => $frp,
                     'confidence' => $confidence,
+                    'confidenceKategori' => $confidenceCategory,
                 ];
+                $availableMonths[] = substr($date, 0, 7);
             }
         } finally {
             fclose($file);
         }
 
-        return $this->groupHotspots($hotspots);
+        $months = array_values(array_unique($availableMonths));
+        sort($months);
+
+        if ($month !== null) {
+            $hotspots = array_values(array_filter(
+                $hotspots,
+                static fn (array $hotspot): bool => substr($hotspot['tanggal'], 0, 7) === $month,
+            ));
+        }
+
+        return [
+            'hotspots' => $hotspots,
+            'months' => $months,
+            'clusters' => $this->groupHotspots($hotspots),
+        ];
     }
 
     private function requiredFloat(string $value, string $field): float
@@ -157,7 +209,8 @@ class HotspotZoneService
      *     waktu: string,
      *     satelit: string,
      *     frp: float,
-     *     confidence: float
+     *     confidence: float|null,
+     *     confidenceKategori: string|null
      * }>  $hotspots
      * @return list<array{
      *     id: int,
@@ -167,7 +220,8 @@ class HotspotZoneService
      *     radius: int,
      *     jumlah: int,
      *     rataFrp: float,
-     *     rataConfidence: float,
+     *     rataConfidence: float|null,
+     *     confidenceKategori: array{l: int, n: int, h: int},
      *     tinggi: bool,
      *     hotspots: list<array{
      *         lat: float,
@@ -176,7 +230,8 @@ class HotspotZoneService
      *         waktu: string,
      *         satelit: string,
      *         frp: float,
-     *         confidence: float
+     *         confidence: float|null,
+     *         confidenceKategori: string|null
      *     }>
      * }>
      */
@@ -216,6 +271,18 @@ class HotspotZoneService
             $latitude = array_sum(array_column($cluster, 'lat')) / $count;
             $longitude = array_sum(array_column($cluster, 'lng')) / $count;
             $centroid = ['lat' => $latitude, 'lng' => $longitude];
+            $numericConfidence = array_values(array_filter(
+                array_column($cluster, 'confidence'),
+                static fn (?float $confidence): bool => $confidence !== null,
+            ));
+            $confidenceCategories = ['l' => 0, 'n' => 0, 'h' => 0];
+
+            foreach ($cluster as $member) {
+                if ($member['confidenceKategori'] !== null) {
+                    $confidenceCategories[$member['confidenceKategori']]++;
+                }
+            }
+
             $radius = max(array_map(
                 fn (array $member): float => $this->distanceInMeters($centroid, $member),
                 $cluster,
@@ -229,7 +296,10 @@ class HotspotZoneService
                 'radius' => (int) round($radius),
                 'jumlah' => $count,
                 'rataFrp' => round(array_sum(array_column($cluster, 'frp')) / $count, 1),
-                'rataConfidence' => round(array_sum(array_column($cluster, 'confidence')) / $count, 1),
+                'rataConfidence' => $numericConfidence === []
+                    ? null
+                    : round(array_sum($numericConfidence) / count($numericConfidence), 1),
+                'confidenceKategori' => $confidenceCategories,
                 'tinggi' => $count >= 3,
                 'hotspots' => $cluster,
             ];

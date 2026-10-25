@@ -115,44 +115,69 @@
         }
     </style>
 </head>
-<body class="min-h-screen font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100">
-    <div class="min-h-screen w-full max-w-2xl lg:max-w-6xl xl:max-w-7xl bg-[#fffaf8] shadow-[0_0_32px_rgba(75,35,35,0.06)] sm:shadow-xl flex flex-col justify-between">
+<body class="min-h-screen font-sans text-[#292626] antialiased bg-[#fffaf8]">
+    <div class="min-h-screen w-full bg-[#fffaf8] flex flex-col justify-between">
 
         <!-- Top Header Bar (Masyarakat) -->
-        <header class="sticky top-0 z-20 border-b border-[#f2e9e6] bg-[#fffaf8]/95 px-5 py-3 backdrop-blur">
-            <div class="flex items-center justify-between gap-3">
+        <header class="sticky top-0 z-20 w-full border-b border-[#f2e9e6] bg-[#fffaf8]/95 backdrop-blur">
+            <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-3.5">
                 <div class="flex items-center gap-3">
-                    <button type="button" onclick="history.back()" aria-label="Kembali" class="rounded-full p-1 text-[#473a38] transition hover:bg-[#f2e9e6]">
+                    <button type="button" onclick="history.back()" aria-label="Kembali" class="rounded-full p-1 text-[#473a38] transition hover:bg-[#f2e9e6] md:hidden">
                         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     </button>
-                    <a href="{{ route('peta') }}" aria-current="page" class="flex min-w-0 items-center gap-2.5">
-                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-100 bg-white p-2 shadow-sm">
+                    <a href="{{ route('beranda') }}" class="flex min-w-0 items-center gap-2.5 sm:gap-3" aria-label="SIGAP Damkar Beranda">
+                        <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-white p-1.5 shadow-sm">
                             <img src="{{ asset('images/sigap-logo.svg') }}" alt="SIGAP Logo" class="h-full w-full object-contain">
                         </span>
                         <span class="min-w-0 leading-tight">
-                            <span class="block text-sm font-extrabold tracking-[0.08em] text-[#bd101b]">SIGAP</span>
-                            <span class="block text-[11px] font-bold uppercase tracking-wide text-[#292626]">Peta Pos Damkar</span>
+                            <span class="block text-[10px] sm:text-xs font-extrabold tracking-[0.14em] text-[#bd101b]">SIGAP DAMKAR</span>
+                            <span class="block text-xl sm:text-2xl font-bold tracking-tight text-[#292626]">Peta Pos</span>
                         </span>
                     </a>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <!-- Desktop Navigation Menu (md: & lg:) -->
+                <nav class="hidden md:flex items-center gap-1.5 lg:gap-3 text-sm font-semibold text-[#665a57]">
+                    <a href="{{ route('beranda') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#bd101b] hover:bg-[#fff0ed] transition">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/></svg>
+                        <span>Beranda</span>
+                    </a>
+                    <a href="{{ route('peta') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[#bd101b] bg-red-50 font-bold transition">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15"/></svg>
+                        <span>Peta Pos Damkar</span>
+                    </a>
+                    <a href="{{ route('laporan.saya') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#bd101b] hover:bg-[#fff0ed] transition">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4h6l1 2h4v15H4V6h4l1-2Zm1 6h4m-4 4h6m-6 4h6"/></svg>
+                        <span>Laporan Saya</span>
+                    </a>
+                    <a href="{{ route('edukasi.index') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#bd101b] hover:bg-[#fff0ed] transition">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        <span>Edukasi</span>
+                    </a>
+                </nav>
+
+                <div class="flex items-center gap-2 sm:gap-3">
                     @can('damkar')
-                        <a href="{{ route('damkar.peta') }}" title="Beralih ke Peta Operasional Damkar" class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold text-slate-700 shadow-sm hover:bg-slate-50">
+                        <a href="{{ route('damkar.peta') }}" title="Beralih ke Peta Operasional Damkar" class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition">
                             <span>Panel Petugas</span>
                             <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                         </a>
                     @endcan
-                    <a href="tel:113" class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#bd101b] px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition hover:bg-[#a00e17]">
+                    <a href="{{ route('portal') }}" title="Kembali ke Pilihan Portal" class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-bold text-slate-600 shadow-sm transition hover:border-red-200 hover:text-[#bd101b]">
+                        <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        <span>Portal</span>
+                    </a>
+                    <a href="tel:112" class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#bd101b] hover:bg-[#a00e17] px-3 py-1.5 text-[11px] sm:text-xs font-bold text-white shadow-sm transition">
                         <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                        <span>113 Darurat</span>
+                        <span>112 Darurat</span>
                     </a>
                 </div>
             </div>
         </header>
 
         <!-- Main Content Peta Publik -->
-        <main class="flex-1 space-y-4 px-5 pb-6 pt-4 sm:px-7">
+        <main class="flex-1 w-full">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-5 sm:py-7 space-y-4">
 
             <!-- Judul Halaman Publik -->
             <section aria-labelledby="peta-title" class="space-y-1">
@@ -233,9 +258,9 @@
                             </div>
 
                             <div class="flex flex-col gap-2 shrink-0">
-                                <a href="tel:113" class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#bd101b] px-3.5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#a00e17]">
+                                <a href="tel:112" class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#bd101b] px-3.5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#a00e17]">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                    <span>Panggil 113</span>
+                                    <span>Panggil 112</span>
                                 </a>
                                 <button type="button" id="btn-focus-nearest" class="inline-flex items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
                                     <span>Lihat di Peta</span>
@@ -285,7 +310,7 @@
                                     </div>
                                 </div>
 
-                                <a href="tel:113" onclick="event.stopPropagation()" title="Panggil Cepat 113" class="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-[#bd101b] hover:bg-[#bd101b] hover:text-white transition">
+                                <a href="tel:112" onclick="event.stopPropagation()" title="Panggil Cepat 112" class="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-[#bd101b] hover:bg-[#bd101b] hover:text-white transition">
                                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                 </a>
                             </div>
@@ -295,26 +320,47 @@
 
             </div>
 
+        </div>
         </main>
 
-        <!-- Bottom Navigation Bar (Masyarakat) -->
-        <nav aria-label="Navigasi utama" class="sticky bottom-0 z-30 grid grid-cols-4 border-t border-[#f0e8e5] bg-[#fffaf8]/95 px-2 pb-[max(0.55rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-4px_18px_rgba(60,35,30,0.05)] backdrop-blur">
-            <a href="{{ route('beranda') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6c.8 1.5-.7 2.2.4 3 1-.5 1.3-1.4 1.3-1.4 1.2 1.7 1.3 2.6.3 3.7"/></svg>
-                <span class="text-[10px] font-bold">Beranda</span>
-            </a>
-            <a href="{{ route('peta') }}" aria-current="page" class="flex flex-col items-center gap-0.5 text-[#bd101b]">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15"/></svg>
-                <span class="text-[10px] font-bold">Peta</span>
-            </a>
-            <a href="{{ route('laporan.saya') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4h6l1 2h4v15H4V6h4l1-2Zm1 6h4m-4 4h6m-6 4h6"/></svg>
-                <span class="text-[10px] font-bold">Laporan</span>
-            </a>
-            <a href="{{ route('masyarakat.profile') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 21v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2H4Z"/></svg>
-                <span class="text-[10px] font-bold">Profil</span>
-            </a>
+        <!-- Desktop Footer (Hanya muncul di md: ke atas) -->
+        <footer class="hidden md:block w-full border-t border-[#f0e8e5] bg-[#fffaf8]">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#766965]">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-[#bd101b]">SIGAP DAMKAR</span>
+                        <span>— Sistem Informasi Geografis &amp; Tanggap Kebakaran Kota Palembang</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs font-medium">
+                        <a href="{{ route('portal') }}" class="hover:text-[#bd101b] transition">Portal</a>
+                        <a href="{{ route('peta') }}" class="hover:text-[#bd101b] transition font-bold text-[#bd101b]">Peta</a>
+                        <a href="{{ route('edukasi.index') }}" class="hover:text-[#bd101b] transition">Edukasi</a>
+                        <a href="tel:112" class="font-bold text-[#0064ad] hover:underline">Hotline 112</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Bottom Navigation Bar (Masyarakat, md:hidden) -->
+        <nav aria-label="Navigasi utama" class="sticky bottom-0 z-30 w-full border-t border-[#f0e8e5] bg-[#fffaf8]/95 shadow-[0_-4px_18px_rgba(60,35,30,0.05)] backdrop-blur md:hidden">
+            <div class="mx-auto grid max-w-md grid-cols-4 px-2 pb-[max(0.55rem,env(safe-area-inset-bottom))] pt-2">
+                <a href="{{ route('beranda') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6c.8 1.5-.7 2.2.4 3 1-.5 1.3-1.4 1.3-1.4 1.2 1.7 1.3 2.6.3 3.7"/></svg>
+                    <span class="text-[10px] font-bold">Beranda</span>
+                </a>
+                <a href="{{ route('peta') }}" aria-current="page" class="flex flex-col items-center gap-0.5 text-[#bd101b]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15"/></svg>
+                    <span class="text-[10px] font-bold">Peta</span>
+                </a>
+                <a href="{{ route('laporan.saya') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4h6l1 2h4v15H4V6h4l1-2Zm1 6h4m-4 4h6m-6 4h6"/></svg>
+                    <span class="text-[10px] font-bold">Laporan</span>
+                </a>
+                <a href="{{ route('masyarakat.profile') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 21v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2H4Z"/></svg>
+                    <span class="text-[10px] font-bold">Profil</span>
+                </a>
+            </div>
         </nav>
 
     </div>
@@ -434,9 +480,9 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 pt-1">
-                        <a href="tel:113" class="flex items-center justify-center gap-1 rounded-lg bg-[#bd101b] px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#a00e17]">
+                        <a href="tel:112" class="flex items-center justify-center gap-1 rounded-lg bg-[#bd101b] px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#a00e17]">
                             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            Panggil 113
+                            Panggil 112
                         </a>
                         <a href="https://www.google.com/maps/dir/?api=1&destination=${pos.latitude},${pos.longitude}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
                             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 20 3-3m0 0 3 3m-3-3V4"/></svg>
@@ -634,7 +680,7 @@
                             </div>
                         </div>
 
-                        <a href="tel:113" onclick="event.stopPropagation()" title="Panggil Cepat 113" class="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-[#bd101b] hover:bg-[#bd101b] hover:text-white transition">
+                        <a href="tel:112" onclick="event.stopPropagation()" title="Panggil Cepat 112" class="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-[#bd101b] hover:bg-[#bd101b] hover:text-white transition">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                         </a>
                     `;

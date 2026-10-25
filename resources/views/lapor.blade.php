@@ -3,133 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGAP - Lapor Kebakaran</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#fffaf8">
+    <title>SIGAP Damkar — Lapor Kebakaran</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex justify-center sm:items-center sm:py-6">
+<body class="min-h-screen font-sans text-[#292626] antialiased bg-[#fffaf8]">
+    <div class="min-h-screen w-full bg-[#fffaf8] flex flex-col justify-between">
 
-    <div class="flex min-h-screen w-full max-w-md flex-col bg-white shadow-lg sm:min-h-0 sm:rounded-2xl sm:overflow-hidden">
-        <!-- Header -->
-        <div class="flex items-center p-4 border-b">
-            <button onclick="history.back()" class="p-2 text-gray-600 hover:text-gray-900">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            </button>
-            <div class="ml-3 flex items-center space-x-2">
-                <span class="p-2 bg-red-100 text-red-600 rounded-lg">
-                    🔥
-                </span>
-                <div>
-                    <h1 class="text-sm font-bold text-red-600 tracking-wide uppercase">SIGAP</h1>
-                    <p class="text-xs font-semibold text-gray-700">LAPOR KEBAKARAN</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Alert Danger -->
-        <div class="m-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start space-x-3 text-red-700 text-xs">
-            <span class="text-lg leading-none">⚠️</span>
-            <p><span class="font-bold">Laporkan situasi nyata.</span> Lokasi dan waktu akan langsung ditransmisikan ke Pos Damkar terdekat secara otomatis.</p>
-        </div>
-
-        <form action="{{ route('lapor.store') }}" method="POST" enctype="multipart/form-data" class="p-4 space-y-4 flex-1">
-            @csrf
-
-            <!-- Hidden Input GPS -->
-            <input type="hidden" name="latitude" id="latitude">
-            <input type="hidden" name="longitude" id="longitude">
-
-            <!-- Lokasi Kebakaran -->
-            <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-3">
-                <div class="flex items-center justify-between gap-2">
-                    <span class="text-xs font-bold text-gray-800 flex items-center">
-                        <span class="text-red-500 mr-1">📍</span> Lokasi Kebakaran
-                    </span>
-                    <span id="gps-status" role="status" aria-live="polite" class="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-semibold">Belum dipilih</span>
-                </div>
-
-                <p class="text-[11px] text-gray-500 -mt-1">Ketuk peta di titik kejadian, atau pakai GPS. Pin bisa digeser untuk menyesuaikan.</p>
-
-                <!-- Peta -->
-                <div class="relative">
-                    <div id="map" class="h-64 w-full rounded-lg border border-gray-200 z-0"></div>
-
-                    <button type="button" id="btn-gps"
-                            class="absolute bottom-3 right-3 z-[500] flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-bold text-red-600 shadow-lg ring-1 ring-black/10 transition hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:opacity-70">
-                        <svg id="gps-icon" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3"/><circle cx="12" cy="12" r="7"/></svg>
-                        <span id="gps-label">Lokasi saya</span>
+        <!-- Top Header Bar (Masyarakat) -->
+        <header class="sticky top-0 z-20 w-full border-b border-[#f2e9e6] bg-[#fffaf8]/95 backdrop-blur">
+            <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-3.5">
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="history.back()" aria-label="Kembali" class="rounded-full p-1 text-[#473a38] transition hover:bg-[#f2e9e6] md:hidden">
+                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     </button>
+                    <a href="{{ route('beranda') }}" class="flex min-w-0 items-center gap-2.5 sm:gap-3" aria-label="SIGAP Damkar Beranda">
+                        <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-white p-1.5 shadow-sm">
+                            <img src="{{ asset('images/sigap-logo.svg') }}" alt="SIGAP Logo" class="h-full w-full object-contain">
+                        </span>
+                        <span class="min-w-0 leading-tight">
+                            <span class="block text-[10px] sm:text-xs font-extrabold tracking-[0.14em] text-[#bd101b]">SIGAP DAMKAR</span>
+                            <span class="block text-xl sm:text-2xl font-bold tracking-tight text-[#bd101b]">Lapor Kebakaran</span>
+                        </span>
+                    </a>
+                </div>
 
-                    <div id="peta-hint" class="pointer-events-none absolute left-1/2 top-3 z-[500] -translate-x-1/2 rounded-full bg-gray-900/80 px-3 py-1.5 text-[11px] font-semibold text-white shadow">
-                        Ketuk peta untuk menaruh pin
+                <!-- Desktop Navigation Menu (md: & lg:) -->
+                <nav class="hidden md:flex items-center gap-1.5 lg:gap-3 text-sm font-semibold text-[#665a57]">
+                    <a href="{{ route('beranda') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#bd101b] hover:bg-[#fff0ed] transition">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/></svg>
+                        <span>Beranda</span>
+                    </a>
+                    <a href="{{ route('peta') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#bd101b] hover:bg-[#fff0ed] transition">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15"/></svg>
+                        <span>Peta Pos Damkar</span>
+                    </a>
+                    <a href="{{ route('laporan.saya') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#bd101b] hover:bg-[#fff0ed] transition">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4h6l1 2h4v15H4V6h4l1-2Zm1 6h4m-4 4h6m-6 4h6"/></svg>
+                        <span>Laporan Saya</span>
+                    </a>
+                    <a href="{{ route('edukasi.index') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#bd101b] hover:bg-[#fff0ed] transition">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        <span>Edukasi</span>
+                    </a>
+                </nav>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a href="{{ route('portal') }}" title="Kembali ke Pilihan Portal" class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-bold text-slate-600 shadow-sm transition hover:border-red-200 hover:text-[#bd101b]">
+                        <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        <span>Portal</span>
+                    </a>
+                    <a href="tel:112" class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#bd101b] hover:bg-[#a00e17] px-3 py-1.5 text-[11px] sm:text-xs font-bold text-white shadow-sm transition">
+                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <span>112 Darurat</span>
+                    </a>
+                    <a href="{{ route('masyarakat.profile') }}" class="h-9 w-9 sm:h-10 sm:w-10 overflow-hidden rounded-full border-2 border-[#e7b5ae] bg-white p-0.5 transition hover:ring-2 hover:ring-[#c41621]/30" aria-label="Profil">
+                        <img src="{{ asset('images/avatar.svg') }}" alt="Foto profil" class="h-full w-full rounded-full object-cover">
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 w-full">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-5 sm:py-7 space-y-6">
+
+            <!-- Alert Peringatan Kondisi Darurat -->
+            <div class="rounded-2xl border border-red-200 bg-red-50 p-4 flex items-start gap-3 text-red-800 text-xs sm:text-sm shadow-sm">
+                <span class="text-xl leading-none shrink-0">⚠️</span>
+                <p><span class="font-bold">Laporkan situasi kebakaran nyata.</span> Titik koordinat GPS dan rincian yang Anda kirim akan langsung diproses oleh Command Center Damkar 112 Kota Palembang untuk penugasan pos terdekat.</p>
+            </div>
+
+            <!-- Formulir Pelaporan Kebakaran (2 Kolom di Desktop) -->
+            <form action="{{ route('lapor.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                <!-- Hidden Input GPS -->
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+
+                    <!-- Kolom Kiri: Peta Pemilihan Titik Kebakaran (7 atau 8 cols on lg) -->
+                    <div class="lg:col-span-7 xl:col-span-7 space-y-4">
+                        <div class="rounded-2xl border border-[#f0e8e5] bg-white p-4 sm:p-5 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                                <span class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                                    <span class="text-red-500">📍</span> Titik Lokasi Kebakaran
+                                </span>
+                                <span id="gps-status" role="status" aria-live="polite" class="text-[10px] bg-gray-200 text-gray-600 px-2.5 py-0.5 rounded-full font-bold">Belum dipilih</span>
+                            </div>
+
+                            <p class="text-xs text-[#766965]">Ketuk peta tepat pada titik kebakaran, atau gunakan tombol GPS. Pin penanda dapat digeser untuk penyesuaian posisi presisi.</p>
+
+                            <!-- Peta Interaktif Leaflet -->
+                            <div class="relative overflow-hidden rounded-xl border border-slate-200">
+                                <div id="map" class="h-72 sm:h-96 lg:h-[460px] w-full z-0"></div>
+
+                                <button type="button" id="btn-gps"
+                                        class="absolute bottom-3 right-3 z-[500] flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#bd101b] shadow-lg ring-1 ring-black/10 transition hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:opacity-70">
+                                    <svg id="gps-icon" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3"/><circle cx="12" cy="12" r="7"/></svg>
+                                    <span id="gps-label">Lokasi saya</span>
+                                </button>
+
+                                <div id="peta-hint" class="pointer-events-none absolute left-1/2 top-3 z-[500] -translate-x-1/2 rounded-full bg-gray-900/80 px-3.5 py-1.5 text-[11px] font-semibold text-white shadow backdrop-blur">
+                                    Ketuk peta untuk menaruh pin kejadian
+                                </div>
+                            </div>
+
+                            <!-- Pesan GPS (error / bantuan) -->
+                            <div id="gps-pesan" role="alert" class="hidden rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-xs font-medium text-amber-800"></div>
+
+                            <!-- Bantuan saat izin lokasi diblokir -->
+                            <div id="izin-bantuan" class="hidden rounded-xl border border-red-200 bg-red-50 p-4 space-y-2">
+                                <p class="text-xs font-bold text-red-700">Izin lokasi diblokir di browser</p>
+                                <p class="text-xs text-red-700/90">Browser memblokir deteksi GPS. Anda dapat mengizinkannya lewat pengaturan browser atau cukup ketuk titik kejadian pada peta di atas.</p>
+                                <ol id="izin-langkah" class="list-decimal space-y-1 pl-4 text-xs text-gray-700"></ol>
+                                <p id="izin-inapp" class="hidden text-xs font-semibold text-red-700">Anda membuka halaman ini dari aplikasi lain. Buka lewat browser Chrome/Safari.</p>
+                                <button type="button" id="btn-izin-coba" class="w-full rounded-full bg-[#bd101b] py-2 text-xs font-bold text-white hover:bg-[#a00e17]">Sudah diizinkan, coba lagi</button>
+                            </div>
+
+                            <p id="koordinat-info" class="hidden text-xs font-mono font-medium text-slate-500"></p>
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Rincian Form & Submit (5 cols on lg) -->
+                    <div class="lg:col-span-5 xl:col-span-5 space-y-4">
+
+                        <!-- Alamat & Telepon -->
+                        <div class="rounded-2xl border border-[#f0e8e5] bg-white p-5 shadow-sm space-y-4">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 border-b border-slate-100 pb-2">Informasi Kejadian &amp; Pelapor</h3>
+
+                            <div class="space-y-1.5">
+                                <label for="alamat" class="text-xs font-bold text-[#5c4f4c] uppercase tracking-wider">Alamat Kejadian <span class="text-red-500">*</span></label>
+                                <textarea name="alamat" id="alamat" rows="2" required placeholder="Alamat otomatis terisi setelah lokasi dipilih di peta. Dapat Anda lengkapi." class="w-full p-3 text-sm bg-[#faf8f7] border border-[#f0e8e5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#bd101b] resize-none transition"></textarea>
+                                <p id="alamat-info" class="hidden text-[11px] text-slate-500"></p>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label for="nomor_telepon" class="text-xs font-bold text-[#5c4f4c] uppercase tracking-wider">Nomor Telepon / HP Pelapor <span class="text-red-500">*</span></label>
+                                <input type="text" id="nomor_telepon" name="nomor_telepon" required placeholder="08xxxxxxxxxx" class="w-full p-3 text-sm bg-[#faf8f7] border border-[#f0e8e5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#bd101b] transition">
+                                <p class="text-[11px] text-slate-400">Petugas command center akan menghubungi nomor ini untuk konfirmasi cepat.</p>
+                            </div>
+                        </div>
+
+                        <!-- Foto Bukti Lapangan -->
+                        <div class="rounded-2xl border border-[#f0e8e5] bg-white p-5 shadow-sm space-y-3">
+                            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                    <span>📷</span> Foto Kejadian
+                                </span>
+                                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">Opsional</span>
+                            </div>
+
+                            <div class="flex items-center gap-4">
+                                <label class="cursor-pointer bg-red-50 hover:bg-red-100 border-2 border-dashed border-red-200 text-[#bd101b] rounded-2xl p-4 flex flex-col items-center justify-center w-28 h-28 transition shrink-0">
+                                    <span class="text-2xl">📸</span>
+                                    <span class="text-[11px] font-bold mt-1 text-center leading-tight">Unggah Foto</span>
+                                    <span class="text-[9px] text-slate-400 mt-0.5">Maks 10 MB</span>
+                                    <input type="file" name="foto" accept="image/*" class="hidden" onchange="previewImage(event)">
+                                </label>
+
+                                <div id="image-preview" class="hidden relative w-28 h-28 rounded-2xl overflow-hidden border border-slate-200 shadow-sm shrink-0">
+                                    <img id="preview-img" alt="Pratinjau foto kejadian" class="w-full h-full object-cover">
+                                </div>
+
+                                <p class="text-xs text-[#766965] leading-relaxed">
+                                    Foto membantu komandan regu memperkirakan jumlah armada damkar dan jenis zat pemadam yang diperlukan ke lokasi.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Keterangan Tambahan -->
+                        <div class="rounded-2xl border border-[#f0e8e5] bg-white p-5 shadow-sm space-y-2">
+                            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                    <span>📝</span> Keterangan Tambahan
+                                </span>
+                                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">Opsional</span>
+                            </div>
+                            <textarea name="keterangan" rows="3" placeholder="Contoh: Asap tebal dari lantai 2 ruko, ada korban atau barang mudah meledak..." class="w-full p-3 text-xs sm:text-sm bg-[#faf8f7] border border-[#f0e8e5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#bd101b] resize-none transition"></textarea>
+                        </div>
+
+                        <!-- Tombol Submit -->
+                        <button type="submit" class="w-full py-4 bg-[#bd101b] hover:bg-[#a00e17] text-white font-extrabold rounded-full shadow-lg shadow-red-900/25 text-sm tracking-wide flex items-center justify-center space-x-2 transition cursor-pointer">
+                            <span>🚨</span>
+                            <span>KIRIM LAPORAN SEKARANG</span>
+                        </button>
+
+                    </div>
+
+                </div>
+            </form>
+
+            </div>
+        </main>
+
+        <!-- Desktop Footer (Hanya muncul di md: ke atas) -->
+        <footer class="hidden md:block w-full border-t border-[#f0e8e5] bg-[#fffaf8]">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#766965]">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-[#bd101b]">SIGAP DAMKAR</span>
+                        <span>— Sistem Informasi Geografis &amp; Tanggap Kebakaran Kota Palembang</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs font-medium">
+                        <a href="{{ route('portal') }}" class="hover:text-[#bd101b] transition">Portal</a>
+                        <a href="{{ route('peta') }}" class="hover:text-[#bd101b] transition">Peta</a>
+                        <a href="{{ route('laporan.saya') }}" class="hover:text-[#bd101b] transition">Laporan Saya</a>
+                        <a href="{{ route('edukasi.index') }}" class="hover:text-[#bd101b] transition">Edukasi</a>
+                        <a href="tel:112" class="font-bold text-[#0064ad] hover:underline">Hotline 112</a>
                     </div>
                 </div>
-
-                <!-- Pesan GPS (error / bantuan) -->
-                <div id="gps-pesan" role="alert" class="hidden rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-medium text-amber-800"></div>
-
-                <!-- Bantuan saat izin lokasi diblokir -->
-                <div id="izin-bantuan" class="hidden rounded-lg border border-red-200 bg-red-50 px-3 py-3 space-y-2">
-                    <p class="text-[12px] font-bold text-red-700">Izin lokasi diblokir di browser</p>
-                    <p class="text-[11px] text-red-700/90">Browser tidak akan menampilkan permintaan izin lagi setelah ditolak. Izinkan manual lewat pengaturan situs:</p>
-                    <ol id="izin-langkah" class="list-decimal space-y-1 pl-4 text-[11px] text-gray-700"></ol>
-                    <p id="izin-inapp" class="hidden text-[11px] font-semibold text-red-700">Anda membuka halaman ini dari dalam aplikasi lain. Buka lewat Chrome atau Safari agar izin lokasi bisa diatur.</p>
-                    <button type="button" id="btn-izin-coba" class="w-full rounded-lg bg-red-600 py-2 text-[12px] font-bold text-white hover:bg-red-700">Sudah diizinkan, coba lagi</button>
-                    <p class="text-[10px] text-gray-500">Atau tetap bisa lapor: ketuk peta di titik kejadian.</p>
-                </div>
-
-                <p id="koordinat-info" class="hidden text-[11px] font-medium text-gray-500"></p>
-
-                <div class="space-y-2">
-                    <label for="alamat" class="text-[11px] font-bold text-gray-500 uppercase">Alamat kejadian</label>
-                    <textarea name="alamat" id="alamat" rows="2" required placeholder="Alamat terisi otomatis setelah lokasi dipilih. Bisa Anda ubah." class="w-full p-2.5 text-sm bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"></textarea>
-                    <p id="alamat-info" class="hidden text-[10px] text-gray-400"></p>
-                </div>
-
-                <div class="space-y-2">
-                    <label for="nomor_telepon" class="text-[11px] font-bold text-gray-500 uppercase">Nomor telepon pelapor</label>
-                    <input type="text" id="nomor_telepon" name="nomor_telepon" required placeholder="08xxxxxxxxxx" class="w-full p-2.5 text-sm bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-                </div>
             </div>
+        </footer>
 
-            <!-- Foto Bukti Lapangan -->
-            <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-gray-800 flex items-center">📷 Foto Bukti Lapangan</span>
-                    <span class="text-[10px] text-gray-400">Opsional</span>
-                </div>
-
-                <div class="flex space-x-3 items-center">
-                    <label class="cursor-pointer bg-red-50 border border-red-200 text-red-600 rounded-xl p-3 flex flex-col items-center justify-center w-24 h-24 hover:bg-red-100">
-                        <span class="text-xl">📷</span>
-                        <span class="text-[10px] font-bold mt-1">Ambil Foto</span>
-                        <span class="text-[8px] text-gray-500">Geotag otomatis</span>
-                        <input type="file" name="foto" accept="image/*" class="hidden" onchange="previewImage(event)">
-                    </label>
-
-                    <div id="image-preview" class="hidden relative w-24 h-24 rounded-xl overflow-hidden border">
-                        <img id="preview-img" class="w-full h-full object-cover">
-                    </div>
-                </div>
-
-                <p class="text-[10px] text-gray-400">Format JPG, PNG (Maks 10MB). Petugas dapat memperkirakan armada yang dibutuhkan lewat foto.</p>
+        <!-- Bottom Navigation Bar (Masyarakat, md:hidden) -->
+        <nav aria-label="Navigasi utama" class="sticky bottom-0 z-30 w-full border-t border-[#f0e8e5] bg-[#fffaf8]/95 shadow-[0_-4px_18px_rgba(60,35,30,0.05)] backdrop-blur md:hidden">
+            <div class="mx-auto grid max-w-md grid-cols-4 px-2 pb-[max(0.55rem,env(safe-area-inset-bottom))] pt-2">
+                <a href="{{ route('beranda') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6c.8 1.5-.7 2.2.4 3 1-.5 1.3-1.4 1.3-1.4 1.2 1.7 1.3 2.6.3 3.7"/></svg>
+                    <span class="text-[10px] font-bold">Beranda</span>
+                </a>
+                <a href="{{ route('peta') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15"/></svg>
+                    <span class="text-[10px] font-bold">Peta</span>
+                </a>
+                <a href="{{ route('laporan.saya') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4h6l1 2h4v15H4V6h4l1-2Zm1 6h4m-4 4h6m-6 4h6"/></svg>
+                    <span class="text-[10px] font-bold">Laporan</span>
+                </a>
+                <a href="{{ route('masyarakat.profile') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 21v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2H4Z"/></svg>
+                    <span class="text-[10px] font-bold">Profil</span>
+                </a>
             </div>
+        </nav>
 
-            <!-- Keterangan Singkat -->
-            <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-gray-800 flex items-center">📝 Keterangan Singkat</span>
-                    <span class="text-[10px] text-gray-400">Info Penyelamatan</span>
-                </div>
-                <textarea name="keterangan" rows="3" placeholder="Contoh: Asap tebal membubung dari lantai 2, ada 4 orang penghuni terjebak di balkon belakang..." class="w-full p-2.5 text-xs bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"></textarea>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full shadow-lg text-sm tracking-wide flex items-center justify-center space-x-2 transition sticky bottom-0 mt-6">
-                <span>🚨</span> <span>KIRIM LAPORAN SEKARANG</span>
-            </button>
-        </form>
     </div>
 
     <script>
@@ -141,6 +252,8 @@
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap',
         }).addTo(map);
+
+        setTimeout(() => map.invalidateSize(), 300);
 
         const el = id => document.getElementById(id);
         const inputLat = el('latitude');
@@ -167,7 +280,7 @@
                 kuning:'bg-amber-100 text-amber-700',
             };
             gpsStatus.textContent = teks;
-            gpsStatus.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold ' + (palet[warna] || palet.abu);
+            gpsStatus.className = 'text-[10px] px-2.5 py-0.5 rounded-full font-bold ' + (palet[warna] || palet.abu);
         }
 
         function tampilPesan(teks) {
@@ -247,7 +360,6 @@
         }
 
         function isiAlamatCadangan(lat, lng) {
-            // Alamat lama milik titik sebelumnya, jadi diganti agar tidak menyesatkan petugas
             inputAlamat.value = 'Titik koordinat ' + lat.toFixed(5) + ', ' + lng.toFixed(5);
             alamatInfo.textContent = 'Alamat otomatis tidak tersedia. Mohon lengkapi alamat atau patokan terdekat.';
             alamatInfo.classList.remove('hidden');
@@ -340,7 +452,6 @@
                 setStatus(marker ? 'Dipilih di peta' : 'Belum dipilih', marker ? 'biru' : 'kuning');
 
                 if (err.code === 1 && window.isSecureContext) {
-                    // Ditolak: browser tidak bisa dipaksa menampilkan popup izin lagi
                     tampilBantuanIzin(true);
                 } else {
                     tampilPesan(pesanErrorGps(err));
@@ -351,7 +462,6 @@
         btnGps.addEventListener('click', () => pakaiGps(false));
         el('btn-izin-coba').addEventListener('click', () => pakaiGps(false));
 
-        // Cek status izin lebih dulu: kalau sudah diblokir, jangan minta lagi (tidak akan muncul popup)
         function mulaiGps() {
             if (!navigator.permissions || !navigator.permissions.query) {
                 pakaiGps(true);
@@ -362,9 +472,8 @@
                     setStatus('Izin lokasi diblokir', 'kuning');
                     tampilBantuanIzin(true);
                 } else {
-                    pakaiGps(true); // 'prompt' → popup izin muncul; 'granted' → langsung jalan
+                    pakaiGps(true);
                 }
-                // Otomatis jalan begitu pengguna mengizinkan lewat pengaturan browser
                 status.onchange = () => {
                     if (status.state === 'granted') {
                         tampilBantuanIzin(false);
@@ -373,7 +482,7 @@
                         setStatus(marker ? 'Dipilih di peta' : 'Izin lokasi diblokir', marker ? 'biru' : 'kuning');
                     }
                 };
-            }).catch(() => pakaiGps(true)); // Safari lama: Permissions API tidak mendukung geolocation
+            }).catch(() => pakaiGps(true));
         }
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -387,7 +496,6 @@
             mulaiGps();
         }
 
-        // Titik kebakaran wajib ditentukan sebelum laporan dikirim
         document.querySelector('form').addEventListener('submit', function(e) {
             if (!inputLat.value || !inputLng.value) {
                 e.preventDefault();
@@ -395,7 +503,6 @@
                 el('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
-            // Cegah klik ganda: tombol dikunci dan teksnya berubah selama laporan dikirim
             const tombolKirim = e.target.querySelector('button[type="submit"]');
             if (tombolKirim) {
                 setTimeout(function () {
@@ -407,7 +514,22 @@
             }
         });
 
-        // Nomor telepon: hanya angka (dan tanda + di awal)
+        // Otomatis isi kontak default dari localStorage jika ada
+        (function() {
+            try {
+                const data = JSON.parse(localStorage.getItem('sigap_kontak_default') || 'null');
+                if (data) {
+                    const inputTelp = document.getElementById('nomor_telepon');
+                    if (inputTelp && !inputTelp.value && data.telepon) {
+                        inputTelp.value = data.telepon;
+                    }
+                    if (data.alamat && !inputAlamat.value) {
+                        inputAlamat.placeholder = 'Alamat domisili tersimpan: ' + data.alamat + ' (atau pilih titik peta)';
+                    }
+                }
+            } catch (e) {}
+        })();
+
         const inputTelp = document.querySelector('input[name="nomor_telepon"]');
         if (inputTelp) {
             inputTelp.setAttribute('inputmode', 'tel');
@@ -416,7 +538,6 @@
             });
         }
 
-        // Aktifkan lagi tombol bila halaman dibuka lewat tombol "Kembali" browser
         window.addEventListener('pageshow', function (e) {
             if (!e.persisted) return;
             const t = document.querySelector('form button[type="submit"]');
@@ -428,7 +549,6 @@
             }
         });
 
-        // Image Preview Handler
         function previewImage(event) {
             const file = event.target.files[0];
             if (file && file.size > 10 * 1024 * 1024) {
