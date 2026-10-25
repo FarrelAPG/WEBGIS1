@@ -27,6 +27,17 @@ class IsokronService
      */
     public function untuk(PosDamkar $pos): array
     {
+        // 1. Cek data isokron pre-computed di database/data/isokron/ (instan, tanpa network delay & anti timeout Vercel)
+        if (! empty($pos->unit)) {
+            $precomputedFile = database_path("data/isokron/{$pos->unit}.json");
+            if (file_exists($precomputedFile) && filesize($precomputedFile) > 200) {
+                $json = json_decode((string) file_get_contents($precomputedFile), true);
+                if (is_array($json) && ! empty($json['features'])) {
+                    return $json;
+                }
+            }
+        }
+
         $kunci = sprintf('isokron:v1:%d:%.5f:%.5f', $pos->id, $pos->latitude, $pos->longitude);
 
         // Cache::remember tidak menyimpan apa pun bila closure melempar exception (gagal tidak ikut ter-cache)
