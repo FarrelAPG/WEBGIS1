@@ -201,5 +201,19 @@
             <a href="{{ route('masyarakat.profile') }}" class="flex flex-col items-center gap-0.5 text-[#705d58]"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 21v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2H4Z"/></svg><span class="text-[10px] font-bold">Profil</span></a>
         </nav>
     </div>
+
+    <script>
+        (function() {
+            const KEY = 'sigap_device_id';
+            let devId = localStorage.getItem(KEY);
+            if (!devId) {
+                devId = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 10);
+                localStorage.setItem(KEY, devId);
+            }
+            if (!document.cookie.includes(KEY + '=')) {
+                document.cookie = KEY + '=' + encodeURIComponent(devId) + '; path=/; max-age=31536000; SameSite=Lax';
+            }
+        })();
+    </script>
 </body>
 </html>
