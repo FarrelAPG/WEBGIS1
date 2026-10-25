@@ -30,6 +30,14 @@ class BerandaController extends Controller
         $laporanAktif = ($laporanTerbaru && $laporanTerbaru->masihBerjalanMasyarakat()) ? $laporanTerbaru : null;
         $totalKejadianAktif = Laporan::whereIn('status', ['pending', 'diproses'])->count();
 
-        return view('beranda', compact('laporanAktif', 'totalKejadianAktif'));
+        // Kebakaran terverifikasi/aktif yang sedang ditangani (notifikasi publik untuk seluruh masyarakat)
+        $kebakaranTerverifikasi = Laporan::with(['kendaraan.posDamkar'])
+            ->whereIn('status', ['diproses', 'pending'])
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->latest()
+            ->get();
+
+        return view('beranda', compact('laporanAktif', 'totalKejadianAktif', 'kebakaranTerverifikasi'));
     }
 }

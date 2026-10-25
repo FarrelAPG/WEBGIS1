@@ -113,6 +113,47 @@
             margin: 0.75rem 0.85rem !important;
             line-height: 1.4 !important;
         }
+
+        /* Fire Incident Beacon Marker */
+        .fire-beacon-wrapper {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .fire-beacon-wave {
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            background-color: rgba(220, 38, 38, 0.45);
+            border-radius: 9999px;
+            animation: fire-pulse 1.6s infinite ease-out;
+        }
+        .fire-beacon-core {
+            position: relative;
+            z-index: 2;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            border: 2px solid #ffffff;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 4px 14px rgba(185, 28, 28, 0.7);
+            transition: transform 0.2s ease;
+        }
+        .fire-beacon-wrapper:hover .fire-beacon-core {
+            transform: scale(1.18);
+        }
+        @keyframes fire-pulse {
+            0% { transform: scale(0.6); opacity: 1; }
+            100% { transform: scale(2.4); opacity: 0; }
+        }
     </style>
 </head>
 <body class="min-h-screen font-sans text-[#292626] antialiased sm:flex sm:justify-center sm:bg-gray-100">
@@ -177,10 +218,22 @@
                                 <span id="gps-status-dot" class="h-2.5 w-2.5 animate-ping rounded-full bg-blue-500"></span>
                                 <span id="gps-status-text">Mendeteksi lokasi GPS Anda...</span>
                             </div>
+
+                            @if(isset($kebakaranAktif) && $kebakaranAktif->isNotEmpty())
+                                <button type="button" onclick="fokusKeTitikApiPertama()" class="flex items-center gap-1.5 rounded-full border border-red-300 bg-red-600 px-3 py-1.5 text-[11px] font-black text-white shadow-md transition hover:bg-red-700 animate-pulse cursor-pointer">
+                                    <span>🔥</span>
+                                    <span>{{ $kebakaranAktif->count() }} Kebakaran Aktif</span>
+                                </button>
+                            @endif
                         </div>
 
                         <!-- Kontrol Peta Mengambang (Kanan Atas / Tengah) -->
                         <div class="absolute right-3 top-3 z-10 flex flex-col gap-2">
+                            @if(isset($kebakaranAktif) && $kebakaranAktif->isNotEmpty())
+                                <button type="button" onclick="fokusKeTitikApiPertama()" title="Pusatkan ke Titik Api Kebakaran Aktif" class="flex h-9 w-9 items-center justify-center rounded-xl border border-red-300 bg-red-600 text-white shadow-md transition hover:bg-red-700 animate-bounce cursor-pointer">
+                                    <span class="text-base">🔥</span>
+                                </button>
+                            @endif
                             <button type="button" id="btn-my-location" title="Pusatkan ke Lokasi Saya" class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200/80 bg-white text-slate-700 shadow-md transition hover:bg-slate-50 hover:text-[#bd101b]">
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                     <circle cx="12" cy="12" r="3"/>
@@ -202,6 +255,9 @@
                             <div class="flex items-center gap-3">
                                 <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-blue-600"></span> Lokasi Anda</span>
                                 <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-[#bd101b]"></span> Pos Damkar</span>
+                                @if(isset($kebakaranAktif) && $kebakaranAktif->isNotEmpty())
+                                    <span class="flex items-center gap-1.5 font-bold text-red-600"><span class="h-2.5 w-2.5 rounded-full bg-red-600 animate-ping"></span> Titik Kebakaran Aktif</span>
+                                @endif
                             </div>
                             <span class="text-[10px] font-semibold text-slate-400">Siaga 24 Jam • Palembang</span>
                         </div>
@@ -329,12 +385,26 @@
             'latitude' => (float) $p->latitude,
             'longitude' => (float) $p->longitude,
         ])->values()->toJson();
+
+        $kebakaranJson = ($kebakaranAktif ?? collect())->map(fn ($k) => [
+            'id' => $k->id,
+            'alamat' => $k->alamat,
+            'latitude' => (float) $k->latitude,
+            'longitude' => (float) $k->longitude,
+            'status' => $k->status,
+            'keterangan' => $k->keterangan ?? 'Laporan terverifikasi resmi oleh petugas.',
+            'jam' => $k->created_at?->format('H:i') . ' WIB',
+            'kendaraan' => $k->kendaraan ? ($k->kendaraan->kode . ' (' . $k->kendaraan->nama . ')') : 'Armada Meluncur / Siaga',
+            'pos' => $k->kendaraan?->posDamkar?->nama ?? 'Pos Komando Palembang',
+        ])->values()->toJson();
     @endphp
 
     <script>
     (function () {
         const DEFAULT_CENTER = [-2.9761, 104.7754]; // Pusat Kota Palembang
         const posDamkarList = {!! $posDataJson !!};
+        const kebakaranList = {!! $kebakaranJson !!};
+        const fireMarkers = {};
 
         // Inisialisasi Peta Leaflet
         const map = L.map('public-map', {
@@ -387,6 +457,24 @@
                 iconSize: [24, 24],
                 iconAnchor: [12, 12],
                 popupAnchor: [0, -14]
+            });
+        }
+
+        // Custom Icon untuk Titik Api Kebakaran Aktif
+        function createFireIcon() {
+            return L.divIcon({
+                className: '',
+                html: `
+                    <div class="fire-beacon-wrapper">
+                        <div class="fire-beacon-wave"></div>
+                        <div class="fire-beacon-core">
+                            <span>🔥</span>
+                        </div>
+                    </div>
+                `,
+                iconSize: [44, 44],
+                iconAnchor: [22, 22],
+                popupAnchor: [0, -22]
             });
         }
 
@@ -469,6 +557,95 @@
             posMarkers[pos.id] = marker;
             allLatLngs.push([pos.latitude, pos.longitude]);
         });
+
+        // Pasang Marker & Radius Bahaya Titik Kebakaran Aktif
+        kebakaranList.forEach(k => {
+            // Lingkaran zona bahaya 200m
+            L.circle([k.latitude, k.longitude], {
+                radius: 200,
+                color: '#dc2626',
+                weight: 2,
+                fillColor: '#ef4444',
+                fillOpacity: 0.22,
+                dashArray: '5, 6'
+            }).addTo(map);
+
+            const fireMarker = L.marker([k.latitude, k.longitude], {
+                icon: createFireIcon(),
+                zIndexOffset: 3000,
+                title: '🔥 KEBAKARAN AKTIF: ' + k.alamat
+            }).addTo(map);
+
+            fireMarker.bindPopup(`
+                <div class="space-y-2 text-[#292626] min-w-[240px] max-w-[285px]">
+                    <div class="flex items-center justify-between gap-1 border-b border-red-100 pb-1.5">
+                        <span class="inline-flex items-center gap-1 rounded bg-red-600 px-2 py-0.5 text-[10px] font-black text-white uppercase tracking-wider animate-pulse">
+                            🔥 Kebakaran Aktif
+                        </span>
+                        <span class="text-[10px] font-bold text-slate-500">${k.jam}</span>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-black text-red-700 leading-snug">${k.alamat}</h4>
+                        <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">${k.keterangan}</p>
+                    </div>
+
+                    <div class="rounded-xl bg-red-50 p-2 text-[11px] border border-red-200/80 space-y-1">
+                        <div class="flex items-center justify-between text-[10px]">
+                            <span class="text-slate-500 font-medium">Status Penanganan:</span>
+                            <span class="font-black text-red-700">${k.status === 'diproses' ? 'Sedang Ditangani' : 'Laporan Diterima'}</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[10px]">
+                            <span class="text-slate-500 font-medium">Armada Bertugas:</span>
+                            <span class="font-bold text-slate-800">${k.kendaraan}</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[10px]">
+                            <span class="text-slate-500 font-medium">Dari Pos:</span>
+                            <span class="font-semibold text-slate-700">${k.pos}</span>
+                        </div>
+                    </div>
+
+                    <div class="text-[10px] text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200/80 font-medium leading-tight">
+                        ⚠️ <strong>Peringatan Publik:</strong> Warga sekitar dihimbau menjauhi lokasi kejadian &amp; memberikan prioritas jalan bagi mobil pemadam.
+                    </div>
+                </div>
+            `);
+
+            fireMarkers[k.id] = fireMarker;
+            allLatLngs.push([k.latitude, k.longitude]);
+        });
+
+        // Handler untuk tombol floating fokus ke titik api
+        window.fokusKeTitikApiPertama = function() {
+            if (kebakaranList.length > 0) {
+                const k = kebakaranList[0];
+                map.flyTo([k.latitude, k.longitude], 16, { duration: 1 });
+                if (fireMarkers[k.id]) {
+                    setTimeout(() => fireMarkers[k.id].openPopup(), 400);
+                }
+            } else {
+                alert('Tidak ada insiden kebakaran aktif saat ini di Kota Palembang.');
+            }
+        };
+
+        // Deteksi parameter URL untuk langsung sorot ke titik kebakaran tertentu
+        const urlParams = new URLSearchParams(window.location.search);
+        const fokusId = urlParams.get('fokus') || urlParams.get('kebakaran');
+        if (fokusId && fireMarkers[fokusId]) {
+            const targetFire = kebakaranList.find(k => String(k.id) === String(fokusId));
+            if (targetFire) {
+                setTimeout(() => {
+                    map.flyTo([targetFire.latitude, targetFire.longitude], 16, { duration: 1.2 });
+                    fireMarkers[fokusId].openPopup();
+                }, 600);
+            }
+        } else if (kebakaranList.length > 0 && (urlParams.has('kebakaran') || urlParams.has('fokus'))) {
+            const targetFire = kebakaranList[0];
+            setTimeout(() => {
+                map.flyTo([targetFire.latitude, targetFire.longitude], 16, { duration: 1.2 });
+                fireMarkers[targetFire.id]?.openPopup();
+            }, 600);
+        }
 
         // Fit map bounds saat awal
         if (allLatLngs.length > 0) {
