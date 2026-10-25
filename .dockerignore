@@ -6,3 +6,4 @@ vendor
 tests
 storage/logs/*
 bootstrap/cache/*
+

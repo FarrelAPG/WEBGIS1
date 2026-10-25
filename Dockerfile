@@ -62,3 +62,4 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/d
 EXPOSE 80
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+

@@ -39,3 +39,4 @@ php artisan view:cache || true
 echo "Menjalankan PHP-FPM dan Nginx..."
 php-fpm -D
 exec nginx -g "daemon off;"
+
