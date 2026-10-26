@@ -12,10 +12,9 @@ use App\Http\Controllers\PetaController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Halaman awal portal pemilih peran (Masyarakat atau Admin Damkar)
-Route::get('/', function () {
-    return view('portal');
-})->name('portal');
+// Halaman utama langsung diarahkan ke Beranda Masyarakat
+Route::get('/', [BerandaController::class, 'index'])->name('beranda');
+Route::get('/portal', fn () => redirect()->route('beranda'))->name('portal');
 
 // Halaman antarmuka Masyarakat (Publik)
 Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');

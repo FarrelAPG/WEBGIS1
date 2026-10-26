@@ -47,10 +47,6 @@
 
                 {{-- Aksi Kanan Header --}}
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <a href="{{ route('portal') }}" title="Kembali ke Pilihan Portal" class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-bold text-slate-600 shadow-sm transition hover:border-red-200 hover:text-[#bd101b]">
-                        <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                        <span>Portal</span>
-                    </a>
                     <button type="button" aria-label="Notifikasi Kebakaran" onclick="toggleModalNotif(true)" class="relative rounded-full p-1.5 text-[#473a38] transition hover:bg-black/5">
                         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
                         @if(isset($kebakaranTerverifikasi) && $kebakaranTerverifikasi->isNotEmpty())
@@ -326,7 +322,7 @@
                         <span>— Sistem Informasi Geografis &amp; Tanggap Kebakaran Kota Palembang</span>
                     </div>
                     <div class="flex items-center gap-4 text-xs font-medium">
-                        <a href="{{ route('portal') }}" class="hover:text-[#bd101b] transition">Portal</a>
+                        <a href="{{ route('beranda') }}" class="hover:text-[#bd101b] transition">Beranda</a>
                         <a href="{{ route('peta') }}" class="hover:text-[#bd101b] transition">Peta</a>
                         <a href="{{ route('edukasi.index') }}" class="hover:text-[#bd101b] transition">Edukasi</a>
                         <a href="tel:112" class="font-bold text-[#0064ad] hover:underline">Hotline 112</a>
