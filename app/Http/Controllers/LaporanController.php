@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Laporan;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
 
 class LaporanController extends Controller
 {
@@ -34,7 +33,7 @@ class LaporanController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'alamat' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,jpg,png|max:10240', // Maksimal 10MB
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png|max:4096', // Maksimal 4MB (sesuai batas 4.5MB Vercel payload)
             'keterangan' => 'nullable|string',
         ]);
 

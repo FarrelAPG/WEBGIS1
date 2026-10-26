@@ -157,8 +157,8 @@
                                 <label class="cursor-pointer bg-red-50 hover:bg-red-100 border-2 border-dashed border-red-200 text-[#bd101b] rounded-2xl p-4 flex flex-col items-center justify-center w-28 h-28 transition shrink-0">
                                     <span class="text-2xl">📸</span>
                                     <span class="text-[11px] font-bold mt-1 text-center leading-tight">Unggah Foto</span>
-                                    <span class="text-[9px] text-slate-400 mt-0.5">Maks 10 MB</span>
-                                    <input type="file" name="foto" accept="image/*" class="hidden" onchange="previewImage(event)">
+                                    <span class="text-[9px] text-slate-400 mt-0.5">Maks 4 MB</span>
+                                    <input type="file" name="foto" id="input-foto" accept="image/*" class="hidden" onchange="previewImage(event)">
                                 </label>
 
                                 <div id="image-preview" class="hidden relative w-28 h-28 rounded-2xl overflow-hidden border border-slate-200 shadow-sm shrink-0">
@@ -499,6 +499,14 @@
                 el('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
+
+            const inputFoto = document.getElementById('input-foto');
+            if (inputFoto && inputFoto.files && inputFoto.files[0] && inputFoto.files[0].size > 4.2 * 1024 * 1024) {
+                e.preventDefault();
+                tampilPesan('Ukuran foto melebihi batas 4 MB server. Silakan pilih foto dengan resolusi lebih kecil.');
+                return;
+            }
+
             const tombolKirim = e.target.querySelector('button[type="submit"]');
             if (tombolKirim) {
                 setTimeout(function () {
@@ -545,21 +553,80 @@
             }
         });
 
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file && file.size > 10 * 1024 * 1024) {
-                alert('Ukuran foto maksimal 10 MB. Pilih foto yang lebih kecil.');
-                event.target.value = '';
+        function compressImage(file, maxDimension = 1600, quality = 0.75) {
+            return new Promise((resolve) => {
+                if (!file || !file.type.startsWith('image/')) {
+                    resolve(file);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onerror = () => resolve(file);
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onerror = () => resolve(file);
+                    img.onload = function() {
+                        let { width, height } = img;
+                        if (width > maxDimension || height > maxDimension) {
+                            if (width > height) {
+                                height = Math.round((height * maxDimension) / width);
+                                width = maxDimension;
+                            } else {
+                                width = Math.round((width * maxDimension) / height);
+                                height = maxDimension;
+                            }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob((blob) => {
+                            if (!blob || blob.size >= file.size) {
+                                resolve(file);
+                                return;
+                            }
+                            const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, '') + '.jpg', {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            resolve(compressedFile);
+                        }, 'image/jpeg', quality);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function previewImage(event) {
+            const input = event.target;
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            // Batas maksimal awal sebelum kompresi (misal file > 25 MB)
+            if (file.size > 25 * 1024 * 1024) {
+                alert('Ukuran foto terlalu besar. Silakan pilih foto dengan resolusi lebih kecil.');
+                input.value = '';
                 document.getElementById('image-preview').classList.add('hidden');
                 return;
             }
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('preview-img').src = e.target.result;
-                    document.getElementById('image-preview').classList.remove('hidden');
+
+            // Tampilkan preview foto langsung
+            const previewImg = document.getElementById('preview-img');
+            const previewContainer = document.getElementById('image-preview');
+            previewImg.src = URL.createObjectURL(file);
+            previewContainer.classList.remove('hidden');
+
+            // Kompres otomatis gambar agar muat dalam batas 4.5 MB Vercel Serverless
+            try {
+                const compressedFile = await compressImage(file, 1600, 0.75);
+                if (window.DataTransfer) {
+                    const dt = new DataTransfer();
+                    dt.items.add(compressedFile);
+                    input.files = dt.files;
                 }
-                reader.readAsDataURL(file);
+            } catch (err) {
+                console.warn('Gagal mengompres foto di browser:', err);
             }
         }
     </script>
