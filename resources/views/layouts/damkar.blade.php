@@ -233,52 +233,75 @@
             mainkanSuaraPiip4x();
         }
 
-        function tutupAlertLaporan() {
-            const modal = document.getElementById('modal-alert-laporan');
-            if (modal) {
-                modal.classList.remove('flex');
-                modal.classList.add('hidden');
-            }
-        }
-
-        // Jalankan polling setiap 6 detik di seluruh halaman panel Damkar
-        (function () {
-            let lastReportId = null;
-            let isFirstLoad = true;
-
-            async function periksaLaporanBaru() {
-                try {
-                    const res = await fetch("{{ route('damkar.cek-laporan') }}", {
-                        headers: { 'Accept': 'application/json' }
-                    });
-                    if (!res.ok) return;
-                    const d = await res.json();
-
-                    if (isFirstLoad) {
-                        lastReportId = d.terakhir;
-                        isFirstLoad = false;
-                        return;
-                    }
-
-                    // Jika ada laporan baru yang masuk (ID lebih besar dari sebelumnya) & ada data laporan pending
-                    if (d.terakhir && d.terakhir > lastReportId) {
-                        lastReportId = d.terakhir;
-                        if (d.laporan_baru) {
-                            bukaAlertLaporan(d.laporan_baru);
-                        } else {
-                            // Bila status berubah tanpa payload laporan_baru, reload untuk memperbarui antrean
-                            location.reload();
-                        }
-                    }
-                } catch (e) {
-                    /* coba lagi di polling berikutnya */
+            function tutupAlertLaporan() {
+                const modal = document.getElementById('modal-alert-laporan');
+                if (modal) {
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
+                }
+                // Jika sedang berada di dashboard / laporan damkar, reload agar antrean kartu langsung ter-update
+                if (window.location.pathname.includes('/damkar/dashboard') || window.location.pathname.includes('/damkar/laporan')) {
+                    location.reload();
                 }
             }
 
-            // Cek berkala tiap 6 detik agar responsif seketika
-            periksaLaporanBaru();
-            setInterval(periksaLaporanBaru, 6000);
-        })();
+            // Jalankan polling cepat setiap 3 detik di seluruh panel Damkar
+            (function () {
+                let lastReportId = null;
+                let lastPendingCount = null;
+                let isFirstLoad = true;
+
+                async function periksaLaporanBaru() {
+                    try {
+                        const res = await fetch("{{ route('damkar.cek-laporan') }}?t=" + Date.now(), {
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        if (!res.ok) return;
+                        const d = await res.json();
+
+                        if (isFirstLoad) {
+                            lastReportId = d.terakhir;
+                            lastPendingCount = d.pending;
+                            isFirstLoad = false;
+                            return;
+                        }
+
+                        // Jika ada laporan baru yang masuk (ID lebih besar dari sebelumnya atau jumlah pending bertambah)
+                        const adaLaporanBaru = (d.terakhir && d.terakhir > lastReportId) || (d.pending > lastPendingCount);
+
+                        if (adaLaporanBaru) {
+                            lastReportId = d.terakhir;
+                            lastPendingCount = d.pending;
+
+                            // 1. Munculkan popup darurat & bunyikan alarm piip 4x
+                            if (d.laporan_baru) {
+                                bukaAlertLaporan(d.laporan_baru);
+                            }
+
+                            // 2. Jika sedang di Dashboard / Daftar Laporan, refresh otomatis dalam 1.5 detik
+                            // agar daftar antrean di layar langsung bertambah tanpa perlu refresh manual
+                            if (window.location.pathname.includes('/damkar/dashboard') || window.location.pathname.includes('/damkar/laporan')) {
+                                setTimeout(function () {
+                                    // Hanya refresh jika modal belum ditutup atau biarkan ter-update
+                                    location.reload();
+                                }, 1500);
+                            }
+                        } else if (d.pending !== lastPendingCount) {
+                            lastPendingCount = d.pending;
+                            // Jika ada perubahan status penugasan oleh petugas lain, perbarui tampilan
+                            if (window.location.pathname.includes('/damkar/dashboard') || window.location.pathname.includes('/damkar/laporan')) {
+                                location.reload();
+                            }
+                        }
+                    } catch (e) {
+                        /* coba lagi di polling berikutnya */
+                    }
+                }
+
+                // Cek berkala tiap 3 detik agar responsif seketika
+                periksaLaporanBaru();
+                setInterval(periksaLaporanBaru, 3000);
+            })();
     </script>
     <script>
         // Cegah klik ganda pada tombol kirim form
