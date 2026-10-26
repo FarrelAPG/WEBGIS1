@@ -33,7 +33,6 @@
                 <span class="rounded-full bg-yellow-50 px-3 py-2 text-[11px] font-bold text-yellow-700">10 menit</span>
                 <span class="rounded-full bg-red-50 px-3 py-2 text-[11px] font-bold text-red-600">15 menit</span>
             </div>
-            <span class="rounded-lg bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-500">Mode: Mobil Pemadam</span>
         </div>
         <div class="relative">
             <div id="jangkauan-map" aria-label="Peta jangkauan pos pemadam"></div>
