@@ -233,75 +233,113 @@
             mainkanSuaraPiip4x();
         }
 
-            function tutupAlertLaporan() {
-                const modal = document.getElementById('modal-alert-laporan');
-                if (modal) {
-                    modal.classList.remove('flex');
-                    modal.classList.add('hidden');
-                }
-                // Jika sedang berada di dashboard / laporan damkar, reload agar antrean kartu langsung ter-update
-                if (window.location.pathname.includes('/damkar/dashboard') || window.location.pathname.includes('/damkar/laporan')) {
-                    location.reload();
+        function tutupAlertLaporan() {
+            const modal = document.getElementById('modal-alert-laporan');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Fungsi menyisipkan kartu laporan baru ke antrean dashboard secara live tanpa reload layar
+        function sisipkanKartuLaporanKeDashboard(data) {
+            const wadahDaftar = document.getElementById('wadah-daftar-laporan');
+            const wadahKosong = document.getElementById('wadah-antrean-kosong');
+            const labelAntrean = document.getElementById('label-jumlah-antrean');
+
+            if (!wadahDaftar) return;
+
+            if (wadahKosong) {
+                wadahKosong.classList.add('hidden');
+            }
+
+            // Cek apakah kartu untuk ID ini sudah pernah disisipkan
+            if (document.getElementById('kartu-laporan-' + data.id)) return;
+
+            const kartuHtml = `
+                <div id="kartu-laporan-${data.id}" class="rounded-2xl border-2 border-red-500 bg-white p-4 shadow-md space-y-3 animate-fade-in transition-all">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <span class="text-[10px] font-bold uppercase text-red-600 flex items-center gap-1">
+                                <span class="h-1.5 w-1.5 rounded-full bg-red-600 animate-ping"></span> Baru Masuk
+                            </span>
+                            <h4 class="mt-0.5 text-sm font-bold leading-snug text-slate-900">${data.alamat || 'Lokasi kejadian'}</h4>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                            <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>Menunggu Tim
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>${data.waktu || 'Baru saja'} <span class="text-slate-400 font-semibold">(Baru saja)</span></span>
+                    </div>
+
+                    <a href="${data.url || '#'}" class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#E52329] px-3 py-2.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-red-700">
+                        <span>Lihat Detail &amp; Kirim Tim</span>
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                        </svg>
+                    </a>
+                </div>
+            `;
+
+            wadahDaftar.insertAdjacentHTML('afterbegin', kartuHtml);
+
+            if (labelAntrean) {
+                const total = wadahDaftar.children.length;
+                labelAntrean.textContent = total + ' Antrean';
+            }
+        }
+
+        // Jalankan polling setiap 3 detik di seluruh panel Damkar
+        (function () {
+            let lastReportId = null;
+            let lastPendingCount = null;
+            let isFirstLoad = true;
+
+            async function periksaLaporanBaru() {
+                try {
+                    const res = await fetch("{{ route('damkar.cek-laporan') }}?t=" + Date.now(), {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!res.ok) return;
+                    const d = await res.json();
+
+                    if (isFirstLoad) {
+                        lastReportId = d.terakhir;
+                        lastPendingCount = d.pending;
+                        isFirstLoad = false;
+                        return;
+                    }
+
+                    // Jika ada laporan baru yang masuk
+                    const adaLaporanBaru = (d.terakhir && d.terakhir > lastReportId) || (d.pending > lastPendingCount);
+
+                    if (adaLaporanBaru) {
+                        lastReportId = d.terakhir;
+                        lastPendingCount = d.pending;
+
+                        // 1. Munculkan popup darurat & bunyikan alarm piip 4x (TIDAK AKAN MENUTUP OTOMATIS)
+                        if (d.laporan_baru) {
+                            bukaAlertLaporan(d.laporan_baru);
+                            // 2. Langsung sisipkan kartunya ke kolom Laporan Terbaru tanpa perlu reload halaman
+                            sisipkanKartuLaporanKeDashboard(d.laporan_baru);
+                        }
+                    } else if (d.pending < lastPendingCount) {
+                        // Jika laporan berkurang (sudah selesai/ditolak oleh petugas lain), perbarui angka
+                        lastPendingCount = d.pending;
+                    }
+                } catch (e) {
+                    /* coba lagi di polling berikutnya */
                 }
             }
 
-            // Jalankan polling cepat setiap 3 detik di seluruh panel Damkar
-            (function () {
-                let lastReportId = null;
-                let lastPendingCount = null;
-                let isFirstLoad = true;
-
-                async function periksaLaporanBaru() {
-                    try {
-                        const res = await fetch("{{ route('damkar.cek-laporan') }}?t=" + Date.now(), {
-                            headers: { 'Accept': 'application/json' }
-                        });
-                        if (!res.ok) return;
-                        const d = await res.json();
-
-                        if (isFirstLoad) {
-                            lastReportId = d.terakhir;
-                            lastPendingCount = d.pending;
-                            isFirstLoad = false;
-                            return;
-                        }
-
-                        // Jika ada laporan baru yang masuk (ID lebih besar dari sebelumnya atau jumlah pending bertambah)
-                        const adaLaporanBaru = (d.terakhir && d.terakhir > lastReportId) || (d.pending > lastPendingCount);
-
-                        if (adaLaporanBaru) {
-                            lastReportId = d.terakhir;
-                            lastPendingCount = d.pending;
-
-                            // 1. Munculkan popup darurat & bunyikan alarm piip 4x
-                            if (d.laporan_baru) {
-                                bukaAlertLaporan(d.laporan_baru);
-                            }
-
-                            // 2. Jika sedang di Dashboard / Daftar Laporan, refresh otomatis dalam 1.5 detik
-                            // agar daftar antrean di layar langsung bertambah tanpa perlu refresh manual
-                            if (window.location.pathname.includes('/damkar/dashboard') || window.location.pathname.includes('/damkar/laporan')) {
-                                setTimeout(function () {
-                                    // Hanya refresh jika modal belum ditutup atau biarkan ter-update
-                                    location.reload();
-                                }, 1500);
-                            }
-                        } else if (d.pending !== lastPendingCount) {
-                            lastPendingCount = d.pending;
-                            // Jika ada perubahan status penugasan oleh petugas lain, perbarui tampilan
-                            if (window.location.pathname.includes('/damkar/dashboard') || window.location.pathname.includes('/damkar/laporan')) {
-                                location.reload();
-                            }
-                        }
-                    } catch (e) {
-                        /* coba lagi di polling berikutnya */
-                    }
-                }
-
-                // Cek berkala tiap 3 detik agar responsif seketika
-                periksaLaporanBaru();
-                setInterval(periksaLaporanBaru, 3000);
-            })();
+            periksaLaporanBaru();
+            setInterval(periksaLaporanBaru, 3000);
+        })();
     </script>
     <script>
         // Cegah klik ganda pada tombol kirim form

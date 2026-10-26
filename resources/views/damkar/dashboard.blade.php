@@ -95,23 +95,21 @@
     <div class="col-span-1 space-y-4">
         <div class="flex items-center justify-between">
             <h3 class="text-base font-extrabold text-slate-900">Laporan Terbaru</h3>
-            <span class="text-xs font-bold text-slate-400">{{ $laporanTerbaru->count() }} Antrean</span>
+            <span id="label-jumlah-antrean" class="text-xs font-bold text-slate-400">{{ $laporanTerbaru->count() }} Antrean</span>
         </div>
 
-        @if ($laporanTerbaru->isEmpty())
-            <div class="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center space-y-3">
-                <p class="text-sm font-semibold text-slate-400">Belum ada antrean laporan.</p>
-                <form method="POST" action="{{ route('damkar.reset-demo') }}" onsubmit="return confirm('Kembalikan semua laporan ke status menunggu dan semua kendaraan ke siaga?')">
-                    @csrf
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-sm">
-                        <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                        <span>Munculkan Ulang Laporan Demo</span>
-                    </button>
-                </form>
-            </div>
-        @endif
+        <div id="wadah-antrean-kosong" class="{{ $laporanTerbaru->isEmpty() ? '' : 'hidden' }} rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center space-y-3">
+            <p class="text-sm font-semibold text-slate-400">Belum ada antrean laporan.</p>
+            <form method="POST" action="{{ route('damkar.reset-demo') }}" onsubmit="return confirm('Kembalikan semua laporan ke status menunggu dan semua kendaraan ke siaga?')">
+                @csrf
+                <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>Munculkan Ulang Laporan Demo</span>
+                </button>
+            </form>
+        </div>
 
-        <div class="space-y-3">
+        <div id="wadah-daftar-laporan" class="space-y-3">
             @foreach ($laporanTerbaru as $laporan)
                 <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm space-y-3">
                     <div class="flex items-start justify-between gap-2">
