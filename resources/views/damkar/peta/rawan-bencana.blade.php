@@ -45,12 +45,22 @@
 
         <div id="rawan-map" aria-label="Peta sebaran titik hotspot rawan kebakaran"></div>
 
-        <div class="flex flex-wrap items-center gap-5 border-t border-slate-100 px-4 py-3">
-            <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
-                <span class="inline-block h-3 w-3 rounded-full bg-red-600 ring-2 ring-red-200"></span>
-                Titik Hotspot (Satelit VIIRS)
-            </span>
-            <span class="ml-auto text-[10px] text-slate-400">Sumber: dataset hotspot SNPP / VIIRS</span>
+        <div class="border-t border-slate-100 px-4 py-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
+                    <span class="inline-block h-3 w-3 rounded-full bg-red-600 ring-2 ring-red-200"></span>
+                    Titik Hotspot (Satelit VIIRS)
+                </span>
+                <span class="text-[10px] text-slate-400">Sumber: dataset hotspot SNPP / VIIRS</span>
+            </div>
+
+            <div class="mt-2.5 text-xs text-gray-500 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                <span class="font-bold text-gray-600">Catatan Istilah:</span>
+                <ul class="list-disc pl-4 mt-1 space-y-1">
+                    <li><b>Confidence:</b> Tingkat kepercayaan satelit bahwa titik tersebut adalah api nyata (Low, Nominal, High).</li>
+                    <li><b>FRP (Fire Radiative Power):</b> Intensitas energi panas api dalam Megawatt (MW). Semakin tinggi nilainya, semakin besar apinya.</li>
+                </ul>
+            </div>
         </div>
     </div>
 
