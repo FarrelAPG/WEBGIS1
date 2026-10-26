@@ -58,12 +58,13 @@ class PetaTest extends TestCase
                     && $hotspot['lng'] >= 104.60
                     && $hotspot['lng'] <= 104.90
                     && str_starts_with($hotspot['tanggal'], '2026-10')))
-            ->assertViewHas('zonaRawan', fn ($zones): bool => $zones->sum('jumlah') === 53);
+            ->assertViewHas('zonaRawan', fn ($zones): bool => $zones->sum('jumlah') === 53
+                && $zones->every(fn (array $zone): bool => $zone['tinggi']));
 
         $response->assertSee('HOTSPOT_DATA.forEach')
             ->assertSee('L.circleMarker')
             ->assertSee('HOTSPOT_MARKER_MIN_ZOOM = 14')
-        ->assertSee("map.on('zoomend', updateFilter)", false)
+            ->assertSee("map.on('zoomend', updateHotspotVisibility)", false)
             ->assertSee('Agustus 2026')
             ->assertSee('value="2026-10" selected', false)
             ->assertDontSee('Semua Bulan');
@@ -78,12 +79,13 @@ class PetaTest extends TestCase
         ]))
             ->assertOk()
             ->assertViewHas('selectedMonth', '2026-08')
-            ->assertViewHas('totalHotspot', 61)
-            ->assertViewHas('hotspots', fn ($hotspots): bool => $hotspots->count() === 61
+            ->assertViewHas('totalHotspot', 58)
+            ->assertViewHas('hotspots', fn ($hotspots): bool => $hotspots->count() === 58
                 && $hotspots->every(
                     fn (array $hotspot): bool => str_starts_with($hotspot['tanggal'], '2026-08'),
                 ))
-            ->assertViewHas('zonaRawan', fn ($zones): bool => $zones->sum('jumlah') === 61);
+            ->assertViewHas('zonaRawan', fn ($zones): bool => $zones->sum('jumlah') === 58
+                && $zones->every(fn (array $zone): bool => $zone['tinggi']));
 
         $response->assertSee('value="2026-08" selected', false)
             ->assertSee('2026-08-01');

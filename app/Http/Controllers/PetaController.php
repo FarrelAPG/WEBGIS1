@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Laporan;
 use App\Models\PosDamkar;
 use App\Models\ZonaRawan;
 use App\Services\HotspotZoneService;
@@ -212,9 +213,12 @@ class PetaController extends Controller
             'month' => ['nullable', Rule::in($mapData['months'])],
         ]);
         $zonaRawan = collect($mapData['clusters'])
+            ->where('tinggi', true)
             ->sortByDesc('jumlah')
             ->values();
-        $hotspots = collect($mapData['hotspots']);
+        $hotspots = $zonaRawan->flatMap(
+            fn (array $zona): array => $zona['hotspots'],
+        )->values();
         $dates = $hotspots->pluck('tanggal')->unique()->sort()->values();
         $monthNames = [
             1 => 'Januari',
@@ -243,7 +247,6 @@ class PetaController extends Controller
             'selectedMonth' => $selectedMonth ?? '',
             'totalHotspot' => $hotspots->count(),
             'jumlahZonaKritis' => $zonaRawan->where('tinggi', true)->count(),
-            'jumlahZonaSedang' => $zonaRawan->where('tinggi', false)->count(),
             'tanggalDataset' => $dates->isEmpty()
                 ? ''
                 : ($dates->count() === 1 ? $dates->first() : $dates->first().' s.d. '.$dates->last()),
@@ -262,7 +265,7 @@ class PetaController extends Controller
         }
 
         // Ambil data kebakaran aktif / terverifikasi untuk dipetakan ke seluruh masyarakat
-        $kebakaranAktif = \App\Models\Laporan::with(['kendaraan.posDamkar'])
+        $kebakaranAktif = Laporan::with(['kendaraan.posDamkar'])
             ->whereIn('status', ['diproses', 'pending'])
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
