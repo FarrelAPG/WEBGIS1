@@ -29,9 +29,9 @@
                         <option value="{{ $pos->id }}">{{ $pos->nama }}</option>
                     @endforeach
                 </select>
-                <span class="rounded-full bg-red-50 px-3 py-2 text-[11px] font-bold text-red-600">5 menit</span>
-                <span class="rounded-full bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-600">10 menit</span>
-                <span class="rounded-full bg-yellow-50 px-3 py-2 text-[11px] font-bold text-yellow-700">15 menit</span>
+                <span class="rounded-full bg-emerald-50 px-3 py-2 text-[11px] font-bold text-emerald-700">5 menit</span>
+                <span class="rounded-full bg-yellow-50 px-3 py-2 text-[11px] font-bold text-yellow-700">10 menit</span>
+                <span class="rounded-full bg-red-50 px-3 py-2 text-[11px] font-bold text-red-600">15 menit</span>
             </div>
             <span class="rounded-lg bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-500">Mode: Mobil Pemadam</span>
         </div>
@@ -44,9 +44,9 @@
             </div>
         </div>
         <div class="flex flex-wrap items-center gap-4 border-t border-slate-100 px-4 py-3 text-[11px] font-semibold text-slate-500">
-            <span class="flex items-center gap-2"><i class="h-2.5 w-2.5 rounded-full bg-red-500"></i>0–5 menit</span>
-            <span class="flex items-center gap-2"><i class="h-2.5 w-2.5 rounded-full bg-orange-400"></i>5–10 menit</span>
-            <span class="flex items-center gap-2"><i class="h-2.5 w-2.5 rounded-full bg-yellow-400"></i>10–15 menit</span>
+            <span class="flex items-center gap-2"><i class="h-2.5 w-2.5 rounded-full bg-emerald-500"></i>0–5 menit (Hijau)</span>
+            <span class="flex items-center gap-2"><i class="h-2.5 w-2.5 rounded-full bg-yellow-400"></i>5–10 menit (Kuning)</span>
+            <span class="flex items-center gap-2"><i class="h-2.5 w-2.5 rounded-full bg-[#E52329]"></i>10–15 menit (Merah)</span>
         </div>
     </div>
 
@@ -90,7 +90,7 @@
 
     const pilihan = document.getElementById('pos-select');
     const status = document.getElementById('isokron-status');
-    const warna = { 5: '#E52329', 10: '#fb923c', 15: '#facc15' };
+    const warna = { 5: '#10b981', 10: '#facc15', 15: '#E52329' };
 
     let layerIsokron = null;
     let permintaanKe = 0;
