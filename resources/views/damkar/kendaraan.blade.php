@@ -16,7 +16,7 @@
         <div class="flex items-start justify-between gap-3">
             <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Armada</p>
             <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 p-1 text-blue-600">
-                <img src="{{ asset('images/fire-truck-outline.svg') }}" alt="Ikon truk pemadam kebakaran" class="h-full w-full object-contain">
+                <img src="{{ asset('images/mobil-damkar.png') }}" alt="Mobil Pemadam" class="h-full w-full object-contain">
             </span>
         </div>
         <p class="mt-4 text-3xl font-black text-slate-800">{{ $totalAktif }} <span class="text-xs font-bold text-slate-500">Unit Terdaftar</span></p>
@@ -91,7 +91,7 @@
             <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3">
                     <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 border border-red-100 p-1.5 shadow-sm transition group-hover:scale-105">
-                        <img src="{{ asset('images/fire-truck-outline.svg') }}" alt="Ikon truk pemadam kebakaran" class="h-full w-full object-contain">
+                        <img src="{{ asset('images/mobil-damkar.png') }}" alt="Mobil Pemadam" class="h-full w-full object-contain">
                     </span>
                     <div>
                         <h2 class="text-base font-extrabold text-slate-900 group-hover:text-[#E52329] transition-colors">{{ $kendaraan->kode }}</h2>
@@ -142,7 +142,7 @@
         <div class="flex items-center justify-between bg-gradient-to-r from-[#c4111b] to-[#E52329] p-5 text-white">
             <div class="flex items-center gap-3">
                 <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 p-1.5 text-white backdrop-blur-sm">
-                    <img src="{{ asset('images/fire-truck-outline-white.svg') }}" alt="Ikon truk pemadam kebakaran" class="h-full w-full object-contain">
+                    <img src="{{ asset('images/mobil-damkar-white.png') }}" alt="Mobil Pemadam" class="h-full w-full object-contain">
                 </span>
                 <div>
                     <h3 id="modal-kode" class="text-xl font-black leading-tight">Unit-00</h3>

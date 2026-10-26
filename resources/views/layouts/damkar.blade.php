@@ -67,8 +67,17 @@
                 <a href="{{ route('damkar.kendaraan') }}" @if (request()->routeIs('damkar.kendaraan')) aria-current="page" @endif
                     class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all
                     {{ request()->routeIs('damkar.kendaraan') ? 'bg-[#E52329] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100' }}">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 96 64" aria-hidden="true">
+                        <path d="M7 41h62v13H7z"/>
+                        <path d="M69 54V27h11l9 10v17H69Z"/>
+                        <path d="M75 27v-5m-4 5h10"/>
+                        <path d="M7 41V29h62"/>
+                        <path d="M7 20h59M14 20v9m13-9v9m13-9v9m13-9v9m13-9v9"/>
+                        <path d="M11 20V15h55v5"/>
+                        <path d="M75 38h8"/>
+                        <circle cx="24" cy="54" r="7"/>
+                        <circle cx="77" cy="54" r="7"/>
+                        <path d="M21 13h6m-3 0V9m-4 4-3-3m10 3 3-3"/>
                     </svg>
                     <span>Kendaraan</span>
                 </a>
