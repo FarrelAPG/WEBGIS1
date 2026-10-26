@@ -67,10 +67,8 @@
             <p class="text-xs font-bold text-slate-500">Kendaraan Siap</p>
             <h3 class="mt-1 text-3xl font-extrabold text-slate-900">{{ $statistik['kendaraan_siap'] }}</h3>
         </div>
-        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100/70 text-blue-600">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 17h14M7 17V8h10l2 4h1v5M9 17a2 2 0 11-4 0m14 0a2 2 0 11-4 0M7 8l1.5-3h7L17 8"/>
-            </svg>
+        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100/70 p-1.5 shadow-sm">
+            <img src="{{ asset('images/mobil-damkar.png') }}" alt="Mobil Pemadam" class="h-full w-full object-contain">
         </div>
     </div>
 </div>
