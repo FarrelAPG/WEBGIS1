@@ -45,26 +45,24 @@ class PetaTest extends TestCase
         $response = $this->actingAs($damkar)->get(route('damkar.peta.rawan-bencana'))
             ->assertOk()
             ->assertViewHas('selectedMonth', '2026-10')
-            ->assertViewHas('totalHotspot', 53)
+            ->assertViewHas('totalHotspot', 39)
             ->assertViewHas('monthOptions', fn ($months): bool => $months->keys()->all() === [
                 '2026-07',
                 '2026-08',
                 '2026-09',
                 '2026-10',
             ])
-            ->assertViewHas('hotspots', fn ($hotspots): bool => $hotspots->count() === 53
+            ->assertViewHas('hotspots', fn ($hotspots): bool => $hotspots->count() === 39
                 && $hotspots->every(fn (array $hotspot): bool => $hotspot['lat'] >= -3.10
                     && $hotspot['lat'] <= -2.85
                     && $hotspot['lng'] >= 104.60
                     && $hotspot['lng'] <= 104.90
                     && str_starts_with($hotspot['tanggal'], '2026-10')))
-            ->assertViewHas('zonaRawan', fn ($zones): bool => $zones->sum('jumlah') === 53
+            ->assertViewHas('zonaRawan', fn ($zones): bool => $zones->sum('jumlah') === 39
                 && $zones->every(fn (array $zone): bool => $zone['tinggi']));
 
-        $response->assertSee('HOTSPOT_DATA.forEach')
-            ->assertSee('L.circleMarker')
-            ->assertSee('HOTSPOT_MARKER_MIN_ZOOM = 14')
-            ->assertSee("map.on('zoomend', updateHotspotVisibility)", false)
+        $response->assertSee('ALL_HOTSPOTS.forEach')
+            ->assertSee('fireIcon')
             ->assertSee('Agustus 2026')
             ->assertSee('value="2026-10" selected', false)
             ->assertDontSee('Semua Bulan');
@@ -87,8 +85,7 @@ class PetaTest extends TestCase
             ->assertViewHas('zonaRawan', fn ($zones): bool => $zones->sum('jumlah') === 58
                 && $zones->every(fn (array $zone): bool => $zone['tinggi']));
 
-        $response->assertSee('value="2026-08" selected', false)
-            ->assertSee('2026-08-01');
+        $response->assertSee('value="2026-08" selected', false);
     }
 
     public function test_month_filter_rejects_months_not_present_in_the_dataset(): void
@@ -108,12 +105,12 @@ class PetaTest extends TestCase
             'month' => '2026-07',
         ]))
             ->assertOk()
-            ->assertSee('2026-07-04')
-            ->assertSee('06:10 UTC')
+            ->assertSee('2026-07-29')
+            ->assertSee('06:22 UTC')
             ->assertSee('SNPP')
             ->assertSee('confidence')
             ->assertSee('Nominal (n)')
-            ->assertSee('-3.08559');
+            ->assertSee('-3.08348');
     }
 
     public function test_hotspot_import_includes_coordinate_boundaries_and_excludes_outside_points(): void

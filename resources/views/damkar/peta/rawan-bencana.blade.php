@@ -1,6 +1,6 @@
-﻿@extends('layouts.damkar')
+@extends('layouts.damkar')
 
-@section('judul', 'Peta Rawan Kebakaran ÔÇö Operasional Lapangan')
+@section('judul', 'Peta Rawan Kebakaran — Operasional Lapangan')
 
 @section('content')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -52,7 +52,11 @@
         <div class="flex flex-wrap items-center gap-5 border-t border-slate-100 px-4 py-3">
             <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
                 <span class="h-3 w-3 rounded-full bg-red-600 opacity-70 ring-2 ring-red-200"></span>
-                Zona Merah / Kritis (ÔëÑ 3 hotspot)
+                Zona Merah / Kritis (&ge; 3 hotspot)
+            </span>
+            <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
+                <span class="inline-block h-3 w-3 rounded-full" style="background: radial-gradient(circle, #ff4500, #dc2626);"></span>
+                Titik Hotspot
             </span>
             <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
                 <svg class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
@@ -105,9 +109,9 @@
                                 <span class="block truncate text-[12px] font-extrabold text-slate-800">{{ $zona['nama'] }}</span>
                                 <span class="mt-0.5 block text-[11px] leading-relaxed text-slate-500">
                                     {{ $zona['jumlah'] }} hotspot
-                                    ┬À radius {{ number_format($zona['radius'] / 1000, 1) }} km
-                                    ┬À FRP {{ number_format($zona['rataFrp'], 1) }} MW
-                                    ┬À confidence
+                                    &middot; radius {{ number_format($zona['radius'] / 1000, 1) }} km
+                                    &middot; FRP {{ number_format($zona['rataFrp'], 1) }} MW
+                                    &middot; confidence
                                     @if ($zona['rataConfidence'] !== null)
                                         {{ number_format($zona['rataConfidence'], 1) }}%
                                     @else
@@ -131,7 +135,7 @@
 
         <div class="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-[11px] text-blue-800">
             <p class="font-bold">Metodologi Zona</p>
-            <p class="mt-1 leading-relaxed">Hotspot yang saling terhubung dalam jarak maksimal 5 km dikelompokkan menjadi satu sektor. Centroid dihitung dari rata-rata koordinat; radius mencakup titik terjauh ditambah buffer 500 m. Halaman ini hanya menampilkan zona merah/kritis dengan ÔëÑ 3 hotspot.</p>
+            <p class="mt-1 leading-relaxed">Hotspot yang saling terhubung dalam jarak maksimal 5 km dikelompokkan menjadi satu sektor. Centroid dihitung dari rata-rata koordinat; radius mencakup titik terjauh ditambah buffer 500 m. Halaman ini hanya menampilkan zona merah/kritis dengan &ge; 3 hotspot.</p>
         </div>
     </aside>
 </section>
@@ -139,13 +143,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 const ZONA_DATA = {{ \Illuminate\Support\Js::from($zonaRawan) }};
-const HOTSPOT_MARKER_MIN_ZOOM = 14;
-const map = L.map('rawan-map', { zoomControl: false }).setView([-2.98, 104.75], 10);
+const ALL_HOTSPOTS = {{ \Illuminate\Support\Js::from($hotspots) }};
+
+// Peta terpusat di Kota Palembang
+const map = L.map('rawan-map', { zoomControl: false }).setView([-2.9761, 104.7754], 12);
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '┬® <a href="https://openstreetmap.org">OpenStreetMap</a>'
+    attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>'
 }).addTo(map);
 
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
@@ -156,11 +162,14 @@ const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => (
     "'": '&#039;'
 }[character]));
 const layerMap = new Map();
-const HOTSPOT_DATA = ZONA_DATA.flatMap((zona) => zona.hotspots.map((hotspot) => ({
-    ...hotspot,
-    zonaId: zona.id,
-    tinggi: zona.tinggi
-})));
+
+// ── Ikon api untuk marker hotspot ───────────────────────────────────
+const fireIcon = L.divIcon({
+    html: '<div style="font-size:20px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));">🔥</div>',
+    className: '',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+});
 
 function clusterPopup(zona) {
     const warna = '#dc2626';
@@ -197,7 +206,7 @@ function hotspotPopup(hotspot) {
         : (confidenceLabels[hotspot.confidenceKategori] || 'Tidak tersedia');
 
     return `<div style="min-width:190px;font-family:sans-serif;font-size:12px;">
-        <p style="font-weight:800;font-size:13px;margin:0 0 6px;">Hotspot ${escapeHtml(hotspot.satelit)}</p>
+        <p style="font-weight:800;font-size:13px;margin:0 0 6px;">🔥 Hotspot ${escapeHtml(hotspot.satelit)}</p>
         <table style="width:100%;border-collapse:collapse;">
             <tr><td style="color:#64748b;padding:2px 0;">Akuisisi</td><td style="font-weight:700;padding:2px 0;">${escapeHtml(hotspot.tanggal)} ${escapeHtml(hotspot.waktu)}</td></tr>
             <tr><td style="color:#64748b;padding:2px 0;">FRP</td><td style="font-weight:700;padding:2px 0;">${hotspot.frp.toFixed(1)} MW</td></tr>
@@ -207,10 +216,10 @@ function hotspotPopup(hotspot) {
     </div>`;
 }
 
+// ── Render zona cluster (lingkaran merah + centroid) ────────────────
 ZONA_DATA.forEach((zona) => {
     const warna = '#dc2626';
     const layer = L.layerGroup();
-    const hotspotLayer = L.layerGroup();
     const circle = L.circle([zona.lat, zona.lng], {
         radius: zona.radius,
         color: warna,
@@ -220,7 +229,7 @@ ZONA_DATA.forEach((zona) => {
     }).bindPopup(clusterPopup(zona));
 
     const centroidIcon = L.divIcon({
-        html: `<div style="color:${warna};font-size:25px;font-weight:800;line-height:24px;text-shadow:0 0 2px white,0 0 4px white;">Ôîû</div>`,
+        html: `<div style="color:${warna};font-size:25px;font-weight:800;line-height:24px;text-shadow:0 0 2px white,0 0 4px white;">⌖</div>`,
         className: '',
         iconSize: [24, 24],
         iconAnchor: [12, 12]
@@ -231,21 +240,14 @@ ZONA_DATA.forEach((zona) => {
     layer.addLayer(circle);
     layer.addLayer(centroid);
     layer.addTo(map);
-    layerMap.set(zona.id, { layer, hotspotLayer, centroid, zona });
+    layerMap.set(zona.id, { layer, centroid, zona });
 });
 
-HOTSPOT_DATA.forEach((hotspot) => {
-    const warna = '#dc2626';
-    const zona = layerMap.get(hotspot.zonaId);
-    const marker = L.circleMarker([hotspot.lat, hotspot.lng], {
-        radius: 5,
-        color: warna,
-        weight: 1.5,
-        fillColor: '#fff',
-        fillOpacity: 1
-    }).bindPopup(hotspotPopup(hotspot));
-
-    zona.hotspotLayer.addLayer(marker);
+// ── Render semua hotspot sebagai marker api 🔥 ─────────────────────
+ALL_HOTSPOTS.forEach((hotspot) => {
+    L.marker([hotspot.lat, hotspot.lng], { icon: fireIcon })
+        .bindPopup(hotspotPopup(hotspot))
+        .addTo(map);
 });
 
 function focusZona(id) {
@@ -255,30 +257,12 @@ function focusZona(id) {
         return;
     }
 
-    map.flyTo([item.zona.lat, item.zona.lng], 12, { duration: 0.8 });
+    map.flyTo([item.zona.lat, item.zona.lng], 14, { duration: 0.8 });
     item.centroid.openPopup();
-}
-
-function updateHotspotVisibility() {
-    layerMap.forEach(({ layer, hotspotLayer, zona }) => {
-        if (!map.hasLayer(layer)) {
-            map.addLayer(layer);
-        }
-
-        const tampilkanHotspot = map.getZoom() >= HOTSPOT_MARKER_MIN_ZOOM;
-
-        if (tampilkanHotspot && !map.hasLayer(hotspotLayer)) {
-            map.addLayer(hotspotLayer);
-        } else if (!tampilkanHotspot && map.hasLayer(hotspotLayer)) {
-            map.removeLayer(hotspotLayer);
-        }
-    });
-
 }
 
 document.querySelectorAll('[data-zone-id]').forEach((button) => {
     button.addEventListener('click', () => focusZona(button.dataset.zoneId));
 });
-map.on('zoomend', updateHotspotVisibility);
 </script>
 @endsection
