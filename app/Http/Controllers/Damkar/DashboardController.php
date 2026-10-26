@@ -28,13 +28,23 @@ class DashboardController extends Controller
         return view('damkar.dashboard', compact('statistik', 'laporanTerbaru', 'posDamkarList'));
     }
 
-    // Ringkasan ringan untuk polling: dipakai halaman damkar agar otomatis menyegarkan diri
+    // Ringkasan ringan untuk polling: dipakai halaman damkar agar otomatis mendeteksi laporan baru & memicu alarm
     public function cek()
     {
+        $terbaru = Laporan::where('status', 'pending')->latest('id')->first();
+
         return response()->json([
             'pending' => Laporan::where('status', 'pending')->count(),
             'diproses' => Laporan::where('status', 'diproses')->count(),
             'terakhir' => Laporan::max('id'),
+            'laporan_baru' => $terbaru ? [
+                'id' => $terbaru->id,
+                'alamat' => $terbaru->alamat,
+                'keterangan' => $terbaru->keterangan ?: 'Laporan kebakaran darurat dari masyarakat.',
+                'nomor_telepon' => $terbaru->nomor_telepon ?: '-',
+                'waktu' => $terbaru->created_at?->format('H:i') . ' WIB',
+                'url' => route('damkar.laporan.show', $terbaru),
+            ] : null,
         ]);
     }
 

@@ -115,27 +115,171 @@
         @yield('content')
     </main>
 </div>
-    @if (request()->routeIs('damkar.dashboard', 'damkar.laporan.index'))
-        <script>
-            // Segarkan otomatis saat ada laporan baru / perubahan status (cek tiap 15 detik)
-            (function () {
-                let tandaAwal = null;
-                async function cekLaporan() {
-                    if (document.hidden) return;
-                    try {
-                        const res = await fetch("{{ route('damkar.cek-laporan') }}", { headers: { 'Accept': 'application/json' } });
-                        if (!res.ok) return;
-                        const d = await res.json();
-                        const tanda = [d.pending, d.diproses, d.terakhir].join('-');
-                        if (tandaAwal === null) { tandaAwal = tanda; return; }
-                        if (tanda !== tandaAwal) location.reload();
-                    } catch (e) { /* abaikan, coba lagi di putaran berikutnya */ }
+
+    <!-- Modal Popup Laporan Kebakaran Masuk (Real-time untuk Petugas Damkar) -->
+    <div id="modal-alert-laporan" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in" role="alertdialog" aria-modal="true" aria-labelledby="alert-laporan-title">
+        <div class="relative w-full max-w-md overflow-hidden rounded-3xl border-2 border-red-500 bg-white shadow-2xl shadow-red-950/40">
+            <!-- Header Popup Darurat -->
+            <div class="flex items-center justify-between bg-gradient-to-r from-red-600 via-rose-600 to-red-700 px-5 py-4 text-white">
+                <div class="flex items-center gap-3">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl shadow-inner animate-pulse">
+                        🔥
+                    </span>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="h-2 w-2 rounded-full bg-white animate-ping"></span>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-red-100">Panggilan Darurat</span>
+                        </div>
+                        <h3 id="alert-laporan-title" class="text-base font-extrabold leading-tight text-white">Laporan Kebakaran Masuk!</h3>
+                    </div>
+                </div>
+                <!-- Tombol Silang (X) untuk Menutup Popup -->
+                <button type="button" onclick="tutupAlertLaporan()" aria-label="Tutup notifikasi" class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30 hover:scale-105">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Konten Rincian Kebakaran -->
+            <div class="p-5 space-y-4 bg-[#fffaf8]">
+                <div class="rounded-2xl border border-red-100 bg-white p-4 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-[11px] text-slate-500">
+                        <span class="font-bold text-red-600 uppercase tracking-wide">📍 Lokasi Kejadian:</span>
+                        <span id="alert-laporan-waktu" class="font-semibold text-slate-400">Baru saja</span>
+                    </div>
+                    <p id="alert-laporan-alamat" class="text-sm font-black text-slate-900 leading-snug">
+                        Memuat lokasi kejadian...
+                    </p>
+                    <div class="pt-1 text-xs text-slate-600 line-clamp-2" id="alert-laporan-ket">
+                        -
+                    </div>
+                    <div class="pt-1 flex items-center gap-1.5 text-xs text-slate-500 border-t border-slate-100 mt-2">
+                        <span class="font-bold text-slate-700">Kontak Pelapor:</span>
+                        <span id="alert-laporan-telp" class="font-semibold text-red-700">-</span>
+                    </div>
+                </div>
+
+                <!-- Tombol Tindakan -->
+                <div class="grid grid-cols-2 gap-2.5 pt-1">
+                    <button type="button" onclick="tutupAlertLaporan()" class="w-full rounded-xl border border-slate-200 bg-white py-2.5 px-4 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
+                        Tutup
+                    </button>
+                    <a id="alert-laporan-link" href="{{ route('damkar.laporan.index') }}" class="flex items-center justify-center gap-1.5 rounded-xl bg-red-600 py-2.5 px-4 text-xs font-black text-white shadow-md shadow-red-600/30 transition hover:bg-red-700 hover:scale-[1.02]">
+                        <span>Tugaskan Tim ➔</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Polling Real-Time & Suara Beep 4x untuk Panel Damkar -->
+    <script>
+        // Generator nada "piip piip piip piip" 4 kali via Web Audio API (volume sedang, tanpa butuh file mp3 eksternal)
+        function mainkanSuaraPiip4x() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
                 }
-                cekLaporan();
-                setInterval(cekLaporan, 15000);
-            })();
-        </script>
-    @endif
+
+                const totalPiip = 4;
+                const durasiPiip = 0.14; // lama tiap 'piip'
+                const jedaPiip = 0.16;   // jeda antar 'piip'
+                const frekuensi = 880;   // Nada A5 (tinggi & jernih khas sirine/pager darurat)
+                const volumeSedang = 0.35; // Volume sedang aman & jelas
+
+                for (let i = 0; i < totalPiip; i++) {
+                    const mulaiPada = ctx.currentTime + (i * (durasiPiip + jedaPiip));
+
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(frekuensi, mulaiPada);
+
+                    // Fade in & fade out lembut agar tidak menimbulkan bunyi letupan (pop)
+                    gain.gain.setValueAtTime(0.001, mulaiPada);
+                    gain.gain.exponentialRampToValueAtTime(volumeSedang, mulaiPada + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, mulaiPada + durasiPiip);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(mulaiPada);
+                    osc.stop(mulaiPada + durasiPiip);
+                }
+            } catch (err) {
+                console.warn('Gagal memutar audio darurat:', err);
+            }
+        }
+
+        function bukaAlertLaporan(data) {
+            const modal = document.getElementById('modal-alert-laporan');
+            if (!modal) return;
+
+            document.getElementById('alert-laporan-alamat').textContent = data.alamat || 'Alamat tidak tertera';
+            document.getElementById('alert-laporan-ket').textContent = data.keterangan || 'Laporan kebakaran darurat dari masyarakat.';
+            document.getElementById('alert-laporan-waktu').textContent = data.waktu || 'Baru saja';
+            document.getElementById('alert-laporan-telp').textContent = data.nomor_telepon || '-';
+            if (data.url) {
+                document.getElementById('alert-laporan-link').href = data.url;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            // Bunyikan suara piip 4 kali dengan volume sedang
+            mainkanSuaraPiip4x();
+        }
+
+        function tutupAlertLaporan() {
+            const modal = document.getElementById('modal-alert-laporan');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Jalankan polling setiap 6 detik di seluruh halaman panel Damkar
+        (function () {
+            let lastReportId = null;
+            let isFirstLoad = true;
+
+            async function periksaLaporanBaru() {
+                try {
+                    const res = await fetch("{{ route('damkar.cek-laporan') }}", {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!res.ok) return;
+                    const d = await res.json();
+
+                    if (isFirstLoad) {
+                        lastReportId = d.terakhir;
+                        isFirstLoad = false;
+                        return;
+                    }
+
+                    // Jika ada laporan baru yang masuk (ID lebih besar dari sebelumnya) & ada data laporan pending
+                    if (d.terakhir && d.terakhir > lastReportId) {
+                        lastReportId = d.terakhir;
+                        if (d.laporan_baru) {
+                            bukaAlertLaporan(d.laporan_baru);
+                        } else {
+                            // Bila status berubah tanpa payload laporan_baru, reload untuk memperbarui antrean
+                            location.reload();
+                        }
+                    }
+                } catch (e) {
+                    /* coba lagi di polling berikutnya */
+                }
+            }
+
+            // Cek berkala tiap 6 detik agar responsif seketika
+            periksaLaporanBaru();
+            setInterval(periksaLaporanBaru, 6000);
+        })();
+    </script>
     <script>
         // Cegah klik ganda pada tombol kirim form
         document.addEventListener('submit', function (e) {
