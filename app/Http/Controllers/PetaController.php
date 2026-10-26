@@ -205,13 +205,24 @@ class PetaController extends Controller
 
     public function rawanBencana(Request $request, HotspotZoneService $hotspotZones): View
     {
-        $selectedMonth = $request->validate([
+        $monthInput = $request->validate([
             'month' => ['nullable', 'date_format:Y-m'],
-        ])['month'] ?? now()->format('Y-m');
-        $mapData = $hotspotZones->mapData($selectedMonth);
-        $request->validate([
-            'month' => ['nullable', Rule::in($mapData['months'])],
-        ]);
+        ])['month'] ?? null;
+
+        $mapData = $hotspotZones->mapData($monthInput);
+
+        if ($monthInput !== null) {
+            $request->validate([
+                'month' => [Rule::in($mapData['months'])],
+            ]);
+            $selectedMonth = $monthInput;
+        } else {
+            $currentMonth = now()->format('Y-m');
+            $selectedMonth = in_array($currentMonth, $mapData['months'], true)
+                ? $currentMonth
+                : (end($mapData['months']) ?: $currentMonth);
+            $mapData = $hotspotZones->mapData($selectedMonth);
+        }
         $zonaRawan = collect($mapData['clusters'])
             ->where('tinggi', true)
             ->sortByDesc('jumlah')

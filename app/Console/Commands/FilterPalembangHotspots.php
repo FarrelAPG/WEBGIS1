@@ -23,13 +23,13 @@ class FilterPalembangHotspots extends Command
     {
         $sourcePath = (string) $this->argument('source');
 
-        if (! is_readable($sourcePath)) {
-            $this->error("File sumber tidak dapat dibaca: {$sourcePath}");
+        if (! file_exists($sourcePath)) {
+            $this->error("File sumber tidak ditemukan: {$sourcePath}");
 
             return Command::FAILURE;
         }
 
-        $source = fopen($sourcePath, 'r');
+        $source = @fopen($sourcePath, 'r');
 
         if ($source === false) {
             $this->error("File sumber gagal dibuka: {$sourcePath}");
@@ -103,13 +103,13 @@ class FilterPalembangHotspots extends Command
         $outputPath = (string) ($this->option('output') ?: base_path('database/data/hotspots_palembang.csv'));
         $outputDirectory = dirname($outputPath);
 
-        if (! is_dir($outputDirectory) || ! is_writable($outputDirectory)) {
-            $this->error("Direktori output tidak dapat ditulis: {$outputDirectory}");
+        if (! is_dir($outputDirectory)) {
+            $this->error("Direktori output tidak valid: {$outputDirectory}");
 
             return Command::FAILURE;
         }
 
-        $output = fopen($outputPath, 'w');
+        $output = @fopen($outputPath, 'w');
 
         if ($output === false) {
             $this->error("File output gagal dibuat: {$outputPath}");

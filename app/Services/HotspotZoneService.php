@@ -55,11 +55,11 @@ class HotspotZoneService
     {
         $path = base_path('database/data/hotspots_palembang.csv');
 
-        if (! is_readable($path)) {
-            throw new RuntimeException("Dataset hotspot tidak dapat dibaca: {$path}");
+        if (! file_exists($path)) {
+            throw new RuntimeException("Dataset hotspot tidak ditemukan: {$path}");
         }
 
-        $file = fopen($path, 'r');
+        $file = @fopen($path, 'r');
 
         if ($file === false) {
             throw new RuntimeException("Dataset hotspot gagal dibuka: {$path}");

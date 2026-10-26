@@ -1,6 +1,6 @@
-@extends('layouts.damkar')
+﻿@extends('layouts.damkar')
 
-@section('judul', 'Peta Rawan Kebakaran — Operasional Lapangan')
+@section('judul', 'Peta Rawan Kebakaran ÔÇö Operasional Lapangan')
 
 @section('content')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -13,6 +13,10 @@
         max-width: none !important;
         max-height: none !important;
     }
+    .zona-scroll::-webkit-scrollbar { width: 5px; }
+    .zona-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 999px; }
+    .zona-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+    .zona-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 </style>
 
 <header class="space-y-1">
@@ -48,7 +52,7 @@
         <div class="flex flex-wrap items-center gap-5 border-t border-slate-100 px-4 py-3">
             <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
                 <span class="h-3 w-3 rounded-full bg-red-600 opacity-70 ring-2 ring-red-200"></span>
-                Zona Merah / Kritis (≥ 3 hotspot)
+                Zona Merah / Kritis (ÔëÑ 3 hotspot)
             </span>
             <span class="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
                 <svg class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
@@ -73,9 +77,61 @@
             </div>
         </div>
 
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-100 px-5 py-3.5">
+                <h2 class="text-sm font-extrabold text-slate-800">Daftar Zona Rawan</h2>
+                <p class="mt-0.5 text-[11px] text-slate-400">Klik sektor untuk fokus ke centroid zona</p>
+            </div>
+            <ol class="zona-scroll max-h-[440px] divide-y divide-slate-50 overflow-y-auto">
+                @forelse ($zonaRawan as $i => $zona)
+                    @php
+                        $confidenceKategori = collect($zona['confidenceKategori'])
+                            ->filter(fn (int $jumlah): bool => $jumlah > 0)
+                            ->map(fn (int $jumlah, string $kategori): string => [
+                                'l' => 'Rendah',
+                                'n' => 'Nominal',
+                                'h' => 'Tinggi',
+                            ][$kategori].' '.$jumlah)
+                            ->implode(', ');
+                    @endphp
+                    <li>
+                        <button type="button"
+                                data-zone-id="{{ $zona['id'] }}"
+                                class="flex w-full items-start gap-3 px-5 py-3.5 text-left transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
+                            <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#E52329] text-[11px] font-black text-white shadow-sm">
+                                {{ $i + 1 }}
+                            </span>
+                            <span class="min-w-0 flex-1">
+                                <span class="block truncate text-[12px] font-extrabold text-slate-800">{{ $zona['nama'] }}</span>
+                                <span class="mt-0.5 block text-[11px] leading-relaxed text-slate-500">
+                                    {{ $zona['jumlah'] }} hotspot
+                                    ┬À radius {{ number_format($zona['radius'] / 1000, 1) }} km
+                                    ┬À FRP {{ number_format($zona['rataFrp'], 1) }} MW
+                                    ┬À confidence
+                                    @if ($zona['rataConfidence'] !== null)
+                                        {{ number_format($zona['rataConfidence'], 1) }}%
+                                    @else
+                                        {{ $confidenceKategori ?: 'Tidak tersedia' }}
+                                    @endif
+                                </span>
+                                <span class="mt-0.5 block text-[10px] text-slate-400">
+                                    {{ number_format($zona['lat'], 5) }}, {{ number_format($zona['lng'], 5) }}
+                                </span>
+                            </span>
+                            <span class="shrink-0 rounded-full bg-red-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                                Zona Merah
+                            </span>
+                        </button>
+                    </li>
+                @empty
+                    <li class="px-5 py-8 text-center text-xs text-slate-400">Belum ada data hotspot.</li>
+                @endforelse
+            </ol>
+        </div>
+
         <div class="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-[11px] text-blue-800">
             <p class="font-bold">Metodologi Zona</p>
-            <p class="mt-1 leading-relaxed">Hotspot yang saling terhubung dalam jarak maksimal 5 km dikelompokkan menjadi satu sektor. Centroid dihitung dari rata-rata koordinat; radius mencakup titik terjauh ditambah buffer 500 m. Halaman ini hanya menampilkan zona merah/kritis dengan ≥ 3 hotspot.</p>
+            <p class="mt-1 leading-relaxed">Hotspot yang saling terhubung dalam jarak maksimal 5 km dikelompokkan menjadi satu sektor. Centroid dihitung dari rata-rata koordinat; radius mencakup titik terjauh ditambah buffer 500 m. Halaman ini hanya menampilkan zona merah/kritis dengan ÔëÑ 3 hotspot.</p>
         </div>
     </aside>
 </section>
@@ -89,7 +145,7 @@ L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+    attribution: '┬® <a href="https://openstreetmap.org">OpenStreetMap</a>'
 }).addTo(map);
 
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
@@ -164,7 +220,7 @@ ZONA_DATA.forEach((zona) => {
     }).bindPopup(clusterPopup(zona));
 
     const centroidIcon = L.divIcon({
-        html: `<div style="color:${warna};font-size:25px;font-weight:800;line-height:24px;text-shadow:0 0 2px white,0 0 4px white;">⌖</div>`,
+        html: `<div style="color:${warna};font-size:25px;font-weight:800;line-height:24px;text-shadow:0 0 2px white,0 0 4px white;">Ôîû</div>`,
         className: '',
         iconSize: [24, 24],
         iconAnchor: [12, 12]
