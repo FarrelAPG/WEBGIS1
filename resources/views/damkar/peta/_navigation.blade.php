@@ -4,5 +4,5 @@
     <a href="{{ route('damkar.peta.sumber-air') }}" @if (request()->routeIs('damkar.peta.sumber-air')) aria-current="page" @endif
         class="rounded-xl px-4 py-2.5 text-sm font-bold transition {{ request()->routeIs('damkar.peta.sumber-air') ? 'bg-[#E52329] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">Sumber Air</a>
     <a href="{{ route('damkar.peta.rawan-bencana') }}" @if (request()->routeIs('damkar.peta.rawan-bencana')) aria-current="page" @endif
-        class="rounded-xl px-4 py-2.5 text-sm font-bold transition {{ request()->routeIs('damkar.peta.rawan-bencana') ? 'bg-[#E52329] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">Peta Rawan Bencana</a>
+        class="rounded-xl px-4 py-2.5 text-sm font-bold transition {{ request()->routeIs('damkar.peta.rawan-bencana') ? 'bg-[#E52329] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">Peta Rawan Kebakaran</a>
 </nav>
