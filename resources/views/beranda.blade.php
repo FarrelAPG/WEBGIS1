@@ -58,6 +58,13 @@
                             </span>
                         @endif
                     </button>
+                    <div class="flex items-center gap-1">
+                        <button type="button" id="btn-refresh-halaman" class="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-[10px] font-bold text-[#bd101b] transition hover:bg-red-50 disabled:cursor-wait disabled:opacity-60" aria-label="Refresh informasi kebakaran" title="Refresh informasi kebakaran">
+                            <svg id="halaman-refresh-icon" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span class="hidden sm:inline">Refresh</span>
+                        </button>
+                        <span id="halaman-refresh-status" class="hidden text-[10px] font-semibold text-[#766965] lg:inline" aria-live="polite">20 dtk</span>
+                    </div>
                     <a href="{{ route('masyarakat.profile') }}" class="h-9 w-9 sm:h-10 sm:w-10 overflow-hidden rounded-full border-2 border-[#e7b5ae] bg-white p-0.5 transition hover:ring-2 hover:ring-[#c41621]/30" aria-label="Profil">
                         <img src="{{ asset('images/avatar.svg') }}" alt="Foto profil" class="h-full w-full rounded-full object-cover">
                     </a>
@@ -158,11 +165,6 @@
                                         <span class="h-2.5 w-2.5 rounded-full bg-[#c41621] animate-pulse"></span>Laporan Aktif Anda
                                     </h2>
                                     <div class="flex items-center gap-2">
-                                        <span id="laporan-refresh-status" class="hidden text-[10px] font-semibold text-[#766965] sm:inline" aria-live="polite">Memuat ulang 20 dtk</span>
-                                        <button type="button" id="btn-refresh-laporan" class="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-bold text-[#bd101b] transition hover:bg-red-50 disabled:cursor-wait disabled:opacity-60" aria-label="Refresh laporan aktif sekarang" title="Refresh laporan aktif sekarang">
-                                            <svg id="laporan-refresh-icon" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                            <span>Refresh</span>
-                                        </button>
                                         <span class="text-[11px] sm:text-xs font-semibold text-[#766965]">ID: #SIGAP-{{ str_pad($laporanAktif->id, 4, '0', STR_PAD_LEFT) }}</span>
                                     </div>
                                 </div>
@@ -367,9 +369,9 @@
             const elLokasi = document.getElementById('lokasi-pengguna');
             const btnRefresh = document.getElementById('btn-refresh-lokasi');
             const btnAktivasi = document.getElementById('btn-aktivasi-lapor');
-            const btnRefreshLaporan = document.getElementById('btn-refresh-laporan');
-            const laporanRefreshStatus = document.getElementById('laporan-refresh-status');
-            const laporanRefreshIcon = document.getElementById('laporan-refresh-icon');
+            const btnRefreshHalaman = document.getElementById('btn-refresh-halaman');
+            const halamanRefreshStatus = document.getElementById('halaman-refresh-status');
+            const halamanRefreshIcon = document.getElementById('halaman-refresh-icon');
 
             const STORAGE_KEY = 'sigap_user_geo';
 
@@ -471,26 +473,26 @@
                 });
             }
 
-            if (btnRefreshLaporan) {
+            if (btnRefreshHalaman) {
                 const refreshIntervalSeconds = 20;
                 let secondsUntilRefresh = refreshIntervalSeconds;
 
-                function refreshLaporan() {
-                    btnRefreshLaporan.disabled = true;
-                    laporanRefreshIcon.classList.add('animate-spin');
-                    laporanRefreshStatus.textContent = 'Memuat ulang...';
+                function refreshHalaman() {
+                    btnRefreshHalaman.disabled = true;
+                    halamanRefreshIcon.classList.add('animate-spin');
+                    halamanRefreshStatus.textContent = 'Memuat...';
                     window.location.reload();
                 }
 
-                btnRefreshLaporan.addEventListener('click', refreshLaporan);
-                laporanRefreshStatus.classList.remove('hidden');
+                btnRefreshHalaman.addEventListener('click', refreshHalaman);
+                halamanRefreshStatus.classList.remove('hidden');
 
                 window.setInterval(function() {
                     secondsUntilRefresh -= 1;
-                    laporanRefreshStatus.textContent = 'Memuat ulang ' + secondsUntilRefresh + ' dtk';
+                    halamanRefreshStatus.textContent = secondsUntilRefresh + ' dtk';
 
                     if (secondsUntilRefresh <= 0) {
-                        refreshLaporan();
+                        refreshHalaman();
                     }
                 }, 1000);
             }
