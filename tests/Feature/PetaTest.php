@@ -62,7 +62,7 @@ class PetaTest extends TestCase
                 && $zones->every(fn (array $zone): bool => $zone['tinggi']));
 
         $response->assertSee('ALL_HOTSPOTS.forEach')
-            ->assertSee('fireIcon')
+            ->assertSee('L.circleMarker')
             ->assertSee('Agustus 2026')
             ->assertSee('value="2026-10" selected', false)
             ->assertDontSee('Semua Bulan');
