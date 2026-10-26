@@ -19,7 +19,7 @@ class PetaTest extends TestCase
             ->assertOk()
             ->assertSee('Peta Area Jangkauan Pos Pemadam')
             ->assertSee('Sumber Air')
-            ->assertSee('Peta Rawan Bencana');
+            ->assertSee('Peta Rawan Kebakaran');
     }
 
     public function test_peta_subpages_are_accessible(): void
