@@ -36,7 +36,7 @@ class DashboardController extends Controller
         return response()->json([
             'pending' => Laporan::where('status', 'pending')->count(),
             'diproses' => Laporan::where('status', 'diproses')->count(),
-            'terakhir' => Laporan::max('id'),
+            'terakhir' => Laporan::where('status', 'pending')->max('id') ?? 0,
             'laporan_baru' => $terbaru ? [
                 'id' => $terbaru->id,
                 'alamat' => $terbaru->alamat,

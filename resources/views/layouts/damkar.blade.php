@@ -296,9 +296,18 @@
 
         // Jalankan polling setiap 3 detik di seluruh panel Damkar
         (function () {
-            let lastReportId = null;
-            let lastPendingCount = null;
+            // Simpan daftar ID laporan yang sudah pernah diberi notifikasi agar tidak berulang/iseng
+            const notifiedIds = new Set(JSON.parse(sessionStorage.getItem('sigap_notified_reports') || '[]'));
             let isFirstLoad = true;
+            let lastMaxPendingId = 0;
+
+            function tandaiSudahDiNotif(id) {
+                if (!id) return;
+                notifiedIds.add(id);
+                try {
+                    sessionStorage.setItem('sigap_notified_reports', JSON.stringify([...notifiedIds].slice(-50)));
+                } catch(e) {}
+            }
 
             async function periksaLaporanBaru() {
                 try {
@@ -308,29 +317,28 @@
                     if (!res.ok) return;
                     const d = await res.json();
 
+                    // Pada saat pertama kali buka halaman, tandai laporan yang sudah ada agar tidak memicu alarm palsu
                     if (isFirstLoad) {
-                        lastReportId = d.terakhir;
-                        lastPendingCount = d.pending;
+                        lastMaxPendingId = d.terakhir || 0;
+                        if (d.laporan_baru && d.laporan_baru.id) {
+                            tandaiSudahDiNotif(d.laporan_baru.id);
+                        }
                         isFirstLoad = false;
                         return;
                     }
 
-                    // Jika ada laporan baru yang masuk
-                    const adaLaporanBaru = (d.terakhir && d.terakhir > lastReportId) || (d.pending > lastPendingCount);
-
-                    if (adaLaporanBaru) {
-                        lastReportId = d.terakhir;
-                        lastPendingCount = d.pending;
-
-                        // 1. Munculkan popup darurat & bunyikan alarm piip 4x (TIDAK AKAN MENUTUP OTOMATIS)
-                        if (d.laporan_baru) {
-                            bukaAlertLaporan(d.laporan_baru);
-                            // 2. Langsung sisipkan kartunya ke kolom Laporan Terbaru tanpa perlu reload halaman
-                            sisipkanKartuLaporanKeDashboard(d.laporan_baru);
+                    // Hanya bunyikan alarm & pop-up JIKA BENAR-BENAR ADA LAPORAN BARU yang belum pernah dinotifikasi
+                    if (d.laporan_baru && d.laporan_baru.id && !notifiedIds.has(d.laporan_baru.id)) {
+                        if (d.laporan_baru.id > lastMaxPendingId) {
+                            lastMaxPendingId = d.laporan_baru.id;
                         }
-                    } else if (d.pending < lastPendingCount) {
-                        // Jika laporan berkurang (sudah selesai/ditolak oleh petugas lain), perbarui angka
-                        lastPendingCount = d.pending;
+                        tandaiSudahDiNotif(d.laporan_baru.id);
+
+                        // 1. Munculkan popup darurat & bunyikan alarm piip 4x (hanya 1x untuk laporan baru)
+                        bukaAlertLaporan(d.laporan_baru);
+
+                        // 2. Langsung sisipkan kartunya ke kolom Laporan Terbaru tanpa perlu reload halaman
+                        sisipkanKartuLaporanKeDashboard(d.laporan_baru);
                     }
                 } catch (e) {
                     /* coba lagi di polling berikutnya */
