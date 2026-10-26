@@ -15,8 +15,8 @@
     <div class="rounded-2xl border border-slate-100 border-b-4 border-b-blue-500 bg-white p-5 shadow-sm">
         <div class="flex items-start justify-between gap-3">
             <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Armada</p>
-            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 17h14M7 17V8h10l2 4h1v5M9 17a2 2 0 11-4 0m14 0a2 2 0 11-4 0M7 8l1.5-3h7L17 8"/></svg>
+            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 p-1 text-blue-600">
+                <img src="{{ asset('images/mobil-damkar.png') }}" alt="Mobil Pemadam" class="h-full w-full object-contain">
             </span>
         </div>
         <p class="mt-4 text-3xl font-black text-slate-800">{{ $totalAktif }} <span class="text-xs font-bold text-slate-500">Unit Terdaftar</span></p>
@@ -90,8 +90,8 @@
             
             <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E52329] text-white shadow-sm transition group-hover:scale-105">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 17h14M7 17V8h10l2 4h1v5M9 17a2 2 0 11-4 0m14 0a2 2 0 11-4 0M7 8l1.5-3h7L17 8"/></svg>
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 border border-red-100 p-1.5 shadow-sm transition group-hover:scale-105">
+                        <img src="{{ asset('images/mobil-damkar.png') }}" alt="Mobil Pemadam" class="h-full w-full object-contain">
                     </span>
                     <div>
                         <h2 class="text-base font-extrabold text-slate-900 group-hover:text-[#E52329] transition-colors">{{ $kendaraan->kode }}</h2>
@@ -141,8 +141,8 @@
         {{-- Modal Header --}}
         <div class="flex items-center justify-between bg-gradient-to-r from-[#c4111b] to-[#E52329] p-5 text-white">
             <div class="flex items-center gap-3">
-                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 text-white backdrop-blur-sm">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 17h14M7 17V8h10l2 4h1v5M9 17a2 2 0 11-4 0m14 0a2 2 0 11-4 0M7 8l1.5-3h7L17 8"/></svg>
+                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 p-1.5 text-white backdrop-blur-sm">
+                    <img src="{{ asset('images/mobil-damkar-white.png') }}" alt="Mobil Pemadam" class="h-full w-full object-contain">
                 </span>
                 <div>
                     <h3 id="modal-kode" class="text-xl font-black leading-tight">Unit-00</h3>
