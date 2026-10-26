@@ -187,20 +187,6 @@
                         </div>
                     </div>
 
-                    <!-- Akses Khusus Petugas Damkar -->
-                    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <div class="flex items-center justify-between gap-3">
-                            <div>
-                                <h3 class="text-xs font-bold text-slate-700">Akses Petugas Lapangan</h3>
-                                <p class="text-[11px] text-slate-500 mt-0.5">Masuk ke panel komando &amp; navigasi armada</p>
-                            </div>
-                            <a href="{{ route('damkar.dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#bd101b] hover:bg-red-50 rounded-xl transition border border-red-200">
-                                <span>Panel Damkar</span>
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                            </a>
-                        </div>
-                    </div>
-
                 </div>
 
             </div>
