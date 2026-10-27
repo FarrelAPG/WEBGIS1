@@ -6,6 +6,7 @@
 
 @section('content')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
 <style>
     #osm-map .leaflet-tile-container img { max-width: none !important; max-height: none !important; }
@@ -128,13 +129,13 @@ document.addEventListener('DOMContentLoaded', function () {
         html: `
             <div class="flex flex-col items-center">
                 <div class="bg-[#1E293B] text-white px-2.5 py-1 rounded-xl shadow-md border border-slate-700 text-[10px] font-extrabold whitespace-nowrap mb-1">${routeData.unit}</div>
-                <div class="w-10 h-10 bg-white text-[#E52329] rounded-2xl flex items-center justify-center shadow-lg border-2 border-[#E52329]">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                <div class="w-10 h-10 bg-white text-red-600 rounded-full flex items-center justify-center shadow-lg border-2 border-red-600">
+                    <i class="fa-solid fa-truck-fast text-red-600 text-lg"></i>
                 </div>
                 <span class="text-[9px] font-bold text-slate-600 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded shadow-sm mt-1 whitespace-nowrap">Titik Awal: ${routeData.pos_nama}</span>
             </div>`,
-        iconSize: [110, 70],
-        iconAnchor: [55, 35]
+        iconSize: [160, 78],
+        iconAnchor: [80, 42]
     });
 
     const fireTargetIcon = L.divIcon({
@@ -148,12 +149,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
                 <span class="text-[9px] font-bold text-slate-700 bg-white/95 backdrop-blur-sm px-2 py-0.5 rounded shadow-sm mt-1 whitespace-nowrap">${routeData.lokasi}</span>
             </div>`,
-        iconSize: [120, 75],
-        iconAnchor: [60, 37]
+        iconSize: [160, 78],
+        iconAnchor: [80, 42]
     });
 
-    L.marker([routeData.pos_lat, routeData.pos_lng], { icon: damkarUnitIcon }).addTo(map);
-    L.marker([routeData.fire_lat, routeData.fire_lng], { icon: fireTargetIcon }).addTo(map);
+    L.marker([routeData.pos_lat, routeData.pos_lng], { icon: damkarUnitIcon })
+        .bindPopup(`<b>${routeData.unit}</b><br><span style="font-size:11px;color:#64748b;">Titik Awal: ${routeData.pos_nama}</span>`)
+        .addTo(map);
+
+    L.marker([routeData.fire_lat, routeData.fire_lng], { icon: fireTargetIcon })
+        .bindPopup(`<b>Lokasi Kejadian (TKP)</b><br><span style="font-size:11px;color:#64748b;">${routeData.lokasi}</span>`)
+        .addTo(map);
 
     const durationEl = document.getElementById('duration-val');
     const distanceEl = document.getElementById('distance-val');
