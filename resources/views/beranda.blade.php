@@ -133,26 +133,26 @@
                     {{-- ── KOLOM KIRI: Area Aksi Utama (SOS / Banner Lapor + Laporan Aktif) ── --}}
                     <div class="space-y-6">
 
-                        {{-- Hero Emergency Banner --}}
-                        <section class="overflow-hidden rounded-2xl bg-gradient-to-br from-[#c4111b] via-[#b90d17] to-[#d01b26] text-white shadow-[0_14px_28px_rgba(168,12,24,0.17)] transition-all hover:shadow-[0_18px_36px_rgba(168,12,24,0.22)]" aria-labelledby="emergency-title">
+                        {{-- Hero Emergency Banner (Seluruh kartu dapat diklik untuk membuat laporan) --}}
+                        <a href="{{ route('lapor.create') }}" id="btn-aktivasi-lapor" class="group block overflow-hidden rounded-2xl bg-gradient-to-br from-[#c4111b] via-[#b90d17] to-[#d01b26] text-white shadow-[0_14px_28px_rgba(168,12,24,0.17)] transition-all hover:shadow-[0_18px_36px_rgba(168,12,24,0.26)] hover:scale-[1.01] active:scale-[0.99] cursor-pointer" aria-labelledby="emergency-title">
                             <div class="p-5 sm:p-6 lg:p-7">
                                 <div class="mb-4 flex items-center justify-between gap-3">
                                     <div class="flex min-w-0 items-center gap-2.5">
-                                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/10">
+                                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/10 transition-transform group-hover:scale-105">
                                             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c1 3-1 4.5.5 6 1.7-1.2 2.1-2.7 2.2-3.5C18 9 19 11 19 14a7 7 0 1 1-14 0c0-2.5 1-4.2 3.2-6.5-.1 2.2.7 3.3 1.8 4C11 9 10 6 12 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 13c1 1.1 2 2.1 2 3.5a2 2 0 1 1-4 0c0-1.4.9-2.4 2-3.5Z"/></svg>
                                         </span>
                                         <span class="truncate rounded-full bg-white/15 px-2.5 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wide"><span class="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-white"></span>Sinyal darurat langsung</span>
                                     </div>
-                                    <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-white text-sm sm:text-base font-black text-[#c41621] shadow">SOS</span>
+                                    <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-white text-sm sm:text-base font-black text-[#c41621] shadow transition-transform group-hover:scale-110">SOS</span>
                                 </div>
                                 <h2 id="emergency-title" class="text-[34px] sm:text-[40px] lg:text-[44px] font-extrabold uppercase leading-[0.98] tracking-tight">Lapor<br>Kebakaran</h2>
                                 <p class="mt-2 text-[13px] leading-[1.45] text-white/95 sm:text-sm md:text-base">Tekan untuk laporan darurat seketika &amp; kirim sinyal lokasi GPS langsung ke komando pusat penanganan bencana.</p>
                             </div>
-                            <a href="{{ route('lapor.create') }}" id="btn-aktivasi-lapor" class="flex min-h-12 sm:min-h-14 items-center justify-between gap-3 bg-white px-5 sm:px-7 text-[11px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-black transition hover:bg-gray-100">
+                            <div class="flex min-h-12 sm:min-h-14 items-center justify-between gap-3 bg-white px-5 sm:px-7 text-[11px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wide text-black transition group-hover:bg-gray-100">
                                 <span>Aktivasi cepat 1-ketukan <span class="normal-case tracking-normal text-black/80">— Kirim titik koordinat</span></span>
                                 <svg class="h-5 w-5 shrink-0 text-black transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
-                            </a>
-                        </section>
+                            </div>
+                        </a>
 
                         {{-- Laporan Aktif Anda (Bila Ada) --}}
                         @if ($laporanAktif)
