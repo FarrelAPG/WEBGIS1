@@ -12,7 +12,7 @@ class AuthenticationTest extends TestCase
 
     public function test_login_screen_can_be_rendered(): void
     {
-        $response = $this->get('/damkarlogingokil');
+        $response = $this->get('/damkarloginsigap');
 
         $response->assertStatus(200);
     }
@@ -21,7 +21,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->post('/damkarlogingokil', [
+        $response = $this->post('/damkarloginsigap', [
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -34,7 +34,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post('/damkarlogingokil', [
+        $this->post('/damkarloginsigap', [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
