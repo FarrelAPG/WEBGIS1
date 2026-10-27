@@ -134,7 +134,7 @@
                     <div class="space-y-6">
 
                         {{-- Hero Emergency Banner (Seluruh kartu dapat diklik untuk membuat laporan) --}}
-                        <a href="{{ route('lapor.create') }}" id="btn-aktivasi-lapor" class="group block overflow-hidden rounded-2xl bg-gradient-to-br from-[#c4111b] via-[#b90d17] to-[#d01b26] text-white shadow-[0_14px_28px_rgba(168,12,24,0.17)] transition-all hover:shadow-[0_18px_36px_rgba(168,12,24,0.26)] hover:scale-[1.01] active:scale-[0.99] cursor-pointer" aria-labelledby="emergency-title">
+                        <a href="{{ route('lapor.create') }}" id="btn-aktivasi-lapor" class="group block cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br from-[#c4111b] via-[#b90d17] to-[#d01b26] text-white shadow-[0_14px_28px_rgba(168,12,24,0.17)] transition-all duration-300 hover:shadow-lg hover:-translate-y-1" aria-labelledby="emergency-title">
                             <div class="p-5 sm:p-6 lg:p-7">
                                 <div class="mb-4 flex items-center justify-between gap-3">
                                     <div class="flex min-w-0 items-center gap-2.5">
