@@ -42,7 +42,7 @@ class DashboardController extends Controller
                 'alamat' => $terbaru->alamat,
                 'keterangan' => $terbaru->keterangan ?: 'Laporan kebakaran darurat dari masyarakat.',
                 'nomor_telepon' => $terbaru->nomor_telepon ?: '-',
-                'waktu' => $terbaru->created_at?->format('H:i') . ' WIB',
+                'waktu' => $terbaru->created_at?->format('H:i').' WIB',
                 'url' => route('damkar.laporan.show', $terbaru),
             ] : null,
         ]);
@@ -51,21 +51,33 @@ class DashboardController extends Controller
     public function resetDemo()
     {
         Kendaraan::query()->update(['status' => 'siaga']);
-        Laporan::query()->update([
-            'status' => 'pending',
-            'kendaraan_id' => null,
-            'tanggal_penanganan' => null,
-            'wilayah' => null,
-            'jam_terima' => null,
-            'tiba_tkp' => null,
-            'selesai_pukul' => null,
-            'dugaan_penyebab' => null,
-            'kronologi_kejadian' => null,
-            'korban_jiwa' => 0,
-            'korban_luka' => 0,
-            'catatan_medis' => null,
-            'hasil_dibuat_pada' => null,
-        ]);
+
+        if (Laporan::count() === 0) {
+            Laporan::create([
+                'nomor_telepon' => '081234567890',
+                'latitude' => -2.985,
+                'longitude' => 104.755,
+                'alamat' => 'Jl. Jenderal Sudirman No. 45, Palembang',
+                'keterangan' => 'Kebakaran ruko 2 lantai dekat pusat kota. Asap tebal membubung.',
+                'status' => 'pending',
+            ]);
+        } else {
+            Laporan::query()->update([
+                'status' => 'pending',
+                'kendaraan_id' => null,
+                'tanggal_penanganan' => null,
+                'wilayah' => null,
+                'jam_terima' => null,
+                'tiba_tkp' => null,
+                'selesai_pukul' => null,
+                'dugaan_penyebab' => null,
+                'kronologi_kejadian' => null,
+                'korban_jiwa' => 0,
+                'korban_luka' => 0,
+                'catatan_medis' => null,
+                'hasil_dibuat_pada' => null,
+            ]);
+        }
 
         return redirect()
             ->route('damkar.dashboard')

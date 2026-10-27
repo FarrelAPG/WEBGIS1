@@ -120,6 +120,11 @@
                 {{ session('berhasil') }}
             </div>
         @endif
+        @if (session('error'))
+            <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] font-semibold text-amber-800">
+                {{ session('error') }}
+            </div>
+        @endif
 
         @yield('content')
     </main>

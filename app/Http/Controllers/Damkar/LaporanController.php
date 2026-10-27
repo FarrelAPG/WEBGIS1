@@ -122,6 +122,7 @@ class LaporanController extends Controller
 
             $k->jarak_km = $jarak;
             $k->estimasi_menit = max(2, (int) round(($jarak / 35) * 60)); // asumsi 35 km/jam
+
             return $k;
         })->sortBy('jarak_km')->values();
 
@@ -202,6 +203,13 @@ class LaporanController extends Controller
 
     public function selesai(Request $request, Laporan $laporan)
     {
+        // Jika status sudah selesai, langsung arahkan ke form laporan evaluasi hasil
+        if ($laporan->status === 'selesai') {
+            return redirect()
+                ->route('damkar.laporan.hasil', $laporan)
+                ->with('berhasil', 'Penanganan insiden telah selesai. Silakan lengkapi laporan evaluasi akhir.');
+        }
+
         abort_unless($laporan->bisaDiubahKe('selesai'), 422, 'Transisi status tidak diizinkan.');
 
         $laporan->update([
@@ -221,6 +229,19 @@ class LaporanController extends Controller
 
     public function hasil(Laporan $laporan)
     {
+        // Bila dibuka langsung dan status masih diproses, selesaikan otomatis agar petugas tidak buntu
+        if ($laporan->status !== 'selesai' && $laporan->bisaDiubahKe('selesai')) {
+            $laporan->update([
+                'status' => 'selesai',
+                'tanggal_penanganan' => now()->toDateString(),
+                'selesai_pukul' => now()->format('H:i').' WIB',
+            ]);
+
+            if ($laporan->kendaraan) {
+                $laporan->kendaraan->update(['status' => 'siaga']);
+            }
+        }
+
         abort_unless($laporan->status === 'selesai', 403, 'Laporan belum berstatus selesai.');
 
         $laporan->load(['user', 'kendaraan']);
