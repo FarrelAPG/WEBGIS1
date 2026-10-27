@@ -129,7 +129,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
 
                     {{-- ── KOLOM KIRI: Area Aksi Utama (SOS / Banner Lapor + Laporan Aktif) ── --}}
-                    <div class="space-y-6">
+                    <div class="space-y-6 order-1 lg:order-1 lg:col-start-1 lg:row-start-1">
 
                         {{-- Hero Emergency Banner (Seluruh kartu dapat diklik untuk membuat laporan) --}}
                         <a href="{{ route('lapor.create') }}" id="btn-aktivasi-lapor" class="group block cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br from-[#c4111b] via-[#b90d17] to-[#d01b26] text-white shadow-[0_14px_28px_rgba(168,12,24,0.17)] transition-all duration-300 hover:shadow-lg hover:-translate-y-1" aria-labelledby="emergency-title">
@@ -215,81 +215,10 @@
                             </section>
                         @endif
 
-                        {{-- Kartu Kredit Tim Pengembang --}}
-                        <section aria-labelledby="kredit-tim-title" class="space-y-2.5">
-                            <div class="flex items-center justify-between gap-2">
-                                <h2 id="kredit-tim-title" class="flex items-center gap-2 text-sm sm:text-base font-bold text-[#292626]">
-                                    <svg class="h-4 w-4 text-[#bd101b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
-                                    </svg>
-                                    <span>Tim Pengembang</span>
-                                </h2>
-                                <span class="rounded-full bg-red-50 border border-red-100 px-2 py-0.5 text-[10px] font-bold text-[#bd101b]">Kredit Proyek</span>
-                            </div>
-                            <div class="rounded-2xl border border-[#f3eeeb] bg-white p-4 sm:p-5 shadow-[0_3px_12px_rgba(65,45,40,0.04)] space-y-3">
-                                <p class="text-xs text-[#766965] leading-relaxed">
-                                    Sistem Informasi Geografis &amp; Tanggap Kebakaran (SIGAP Damkar Kota Palembang) dikembangkan oleh:
-                                </p>
-
-                                <div class="space-y-2.5">
-                                    {{-- ======================================================== --}}
-                                    {{-- SILAKAN UBAH DATA NAMA, NIM, DAN PRODI DI BAWAH INI      --}}
-                                    {{-- ======================================================== --}}
-
-                                    {{-- Anggota 1 --}}
-                                    <div class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 transition hover:bg-white hover:border-slate-200 hover:shadow-sm">
-                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-[#bd101b] font-black text-sm">
-                                            01
-                                        </div>
-                                        <div class="min-w-0 flex-1">
-                                            <h3 class="truncate text-sm font-bold text-slate-800">Dewi Indah Aprilia</h3>
-                                            <div class="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500">
-                                                <span>Fakultas: student of industrial engineering<span class="font-semibold text-slate-700">1234567890</span></span>
-                                                <span>•</span>
-                                                <span>Instagram: @dwnaprilianaa<span class="font-semibold text-slate-700">Nama Program Studi</span></span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Anggota 2 --}}
-                                    <div class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 transition hover:bg-white hover:border-slate-200 hover:shadow-sm">
-                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-[#bd101b] font-black text-sm">
-                                            02
-                                        </div>
-                                        <div class="min-w-0 flex-1">
-                                            <h3 class="truncate text-sm font-bold text-slate-800">Tengku Fathsyamil S</h3>
-                                            <div class="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500">
-                                                <span>Fakultas: Student of Applied Sciences<span class="font-semibold text-slate-700">1234567890</span></span>
-                                                <span>•</span>
-                                                <span>Instagram: @syamil.jr_45<span class="font-semibold text-slate-700">Nama Program Studi</span></span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Anggota 3 --}}
-                                    <div class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 transition hover:bg-white hover:border-slate-200 hover:shadow-sm">
-                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-[#bd101b] font-black text-sm">
-                                            03
-                                        </div>
-                                        <div class="min-w-0 flex-1">
-                                            <h3 class="truncate text-sm font-bold text-slate-800">Farrel Aditya</h3>
-                                            <div class="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500">
-                                                <span>Fakultas: Student of Electrical Engineering<span class="font-semibold text-slate-700">1234567890</span></span>
-                                                <span>•</span>
-                                                <span>Instagram: @farreladitya<span class="font-semibold text-slate-700">Nama Program Studi</span></span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- (Tambahkan anggota baru dengan menduplikat blok di atas jika anggota lebih dari 3) --}}
-                                </div>
-                            </div>
-                        </section>
-
                     </div>
 
                     {{-- ── KOLOM KANAN: Informasi Pendukung (Kondisi Wilayah, Hotline 112, Edukasi, Peta) ── --}}
-                    <div class="space-y-6">
+                    <div class="space-y-6 order-2 lg:order-3 lg:col-start-2 lg:row-start-1 lg:row-span-2">
 
                         {{-- Kondisi Wilayah Sekitar --}}
                         <section aria-labelledby="area-title" class="space-y-2.5">
@@ -384,6 +313,85 @@
                             </a>
                         </section>
 
+                    </div>
+
+                    {{-- ── KREDIT TIM PENGEMBANG: Tampil di bawah banner pada desktop, dan di paling bawah pada HP ── --}}
+                    <div class="order-3 lg:order-2 lg:col-start-1 lg:row-start-2">
+                        <section aria-labelledby="kredit-tim-title" class="space-y-2.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <h2 id="kredit-tim-title" class="flex items-center gap-2 text-sm sm:text-base font-bold text-[#292626]">
+                                    <svg class="h-4 w-4 text-[#bd101b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+                                    </svg>
+                                    <span>Tim Pengembang</span>
+                                </h2>
+                                <span class="rounded-full bg-red-50 border border-red-100 px-2.5 py-0.5 text-[10px] font-bold text-[#bd101b]">Kredit Proyek</span>
+                            </div>
+                            <div class="rounded-2xl border border-[#f3eeeb] bg-white p-4 sm:p-5 shadow-[0_3px_12px_rgba(65,45,40,0.04)] space-y-3.5">
+                                <p class="text-xs text-[#766965] leading-relaxed">
+                                    Sistem Informasi Geografis &amp; Tanggap Kebakaran (SIGAP Damkar Kota Palembang) dikembangkan oleh:
+                                </p>
+
+                                <div class="space-y-2.5">
+                                    {{-- Anggota 1 --}}
+                                    <div class="flex items-center gap-3.5 rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-3.5 transition hover:bg-white hover:border-red-100 hover:shadow-sm">
+                                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-100 text-[#bd101b] font-black text-sm border border-red-200/50">
+                                            01
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <h3 class="truncate text-sm sm:text-base font-bold text-slate-900 leading-snug">Dewi Indah Aprilia</h3>
+                                            <p class="text-xs text-slate-500 font-medium mt-0.5 truncate">
+                                                Fakultas: Student of Industrial Engineering
+                                            </p>
+                                            <div class="mt-1">
+                                                <a href="https://instagram.com/dwnaprilianaa" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline transition">
+                                                    <svg class="h-3.5 w-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                                    <span>@dwnaprilianaa</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Anggota 2 --}}
+                                    <div class="flex items-center gap-3.5 rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-3.5 transition hover:bg-white hover:border-red-100 hover:shadow-sm">
+                                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-100 text-[#bd101b] font-black text-sm border border-red-200/50">
+                                            02
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <h3 class="truncate text-sm sm:text-base font-bold text-slate-900 leading-snug">Tengku Fathsyamil S</h3>
+                                            <p class="text-xs text-slate-500 font-medium mt-0.5 truncate">
+                                                Fakultas: Student of Applied Sciences
+                                            </p>
+                                            <div class="mt-1">
+                                                <a href="https://instagram.com/syamil.jr_45" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline transition">
+                                                    <svg class="h-3.5 w-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                                    <span>@syamil.jr_45</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Anggota 3 --}}
+                                    <div class="flex items-center gap-3.5 rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-3.5 transition hover:bg-white hover:border-red-100 hover:shadow-sm">
+                                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-100 text-[#bd101b] font-black text-sm border border-red-200/50">
+                                            03
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <h3 class="truncate text-sm sm:text-base font-bold text-slate-900 leading-snug">Farrel Aditya</h3>
+                                            <p class="text-xs text-slate-500 font-medium mt-0.5 truncate">
+                                                Fakultas: Student of Electrical Engineering
+                                            </p>
+                                            <div class="mt-1">
+                                                <a href="https://instagram.com/farreladitya" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 transition">
+                                                    <svg class="h-3.5 w-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                                    <span>@farreladitya</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
                 </div>
