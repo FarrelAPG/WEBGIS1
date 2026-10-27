@@ -215,6 +215,77 @@
                             </section>
                         @endif
 
+                        {{-- Kartu Kredit Tim Pengembang --}}
+                        <section aria-labelledby="kredit-tim-title" class="space-y-2.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <h2 id="kredit-tim-title" class="flex items-center gap-2 text-sm sm:text-base font-bold text-[#292626]">
+                                    <svg class="h-4 w-4 text-[#bd101b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+                                    </svg>
+                                    <span>Tim Pengembang</span>
+                                </h2>
+                                <span class="rounded-full bg-red-50 border border-red-100 px-2 py-0.5 text-[10px] font-bold text-[#bd101b]">Kredit Proyek</span>
+                            </div>
+                            <div class="rounded-2xl border border-[#f3eeeb] bg-white p-4 sm:p-5 shadow-[0_3px_12px_rgba(65,45,40,0.04)] space-y-3">
+                                <p class="text-xs text-[#766965] leading-relaxed">
+                                    Sistem Informasi Geografis &amp; Tanggap Kebakaran (SIGAP Damkar Kota Palembang) dikembangkan oleh:
+                                </p>
+
+                                <div class="space-y-2.5">
+                                    {{-- ======================================================== --}}
+                                    {{-- SILAKAN UBAH DATA NAMA, NIM, DAN PRODI DI BAWAH INI      --}}
+                                    {{-- ======================================================== --}}
+
+                                    {{-- Anggota 1 --}}
+                                    <div class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 transition hover:bg-white hover:border-slate-200 hover:shadow-sm">
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-[#bd101b] font-black text-sm">
+                                            01
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <h3 class="truncate text-sm font-bold text-slate-800">Dewi Indah Aprilia</h3>
+                                            <div class="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500">
+                                                <span>Fakultas: student of industrial engineering<span class="font-semibold text-slate-700">1234567890</span></span>
+                                                <span>•</span>
+                                                <span>Instagram: @dwnaprilianaa<span class="font-semibold text-slate-700">Nama Program Studi</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Anggota 2 --}}
+                                    <div class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 transition hover:bg-white hover:border-slate-200 hover:shadow-sm">
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-[#bd101b] font-black text-sm">
+                                            02
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <h3 class="truncate text-sm font-bold text-slate-800">Tengku Fathsyamil S</h3>
+                                            <div class="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500">
+                                                <span>Fakultas: Student of Applied Sciences<span class="font-semibold text-slate-700">1234567890</span></span>
+                                                <span>•</span>
+                                                <span>Instagram: @syamil.jr_45<span class="font-semibold text-slate-700">Nama Program Studi</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Anggota 3 --}}
+                                    <div class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3 transition hover:bg-white hover:border-slate-200 hover:shadow-sm">
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-[#bd101b] font-black text-sm">
+                                            03
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <h3 class="truncate text-sm font-bold text-slate-800">Farrel Aditya</h3>
+                                            <div class="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500">
+                                                <span>Fakultas: Student of Electrical Engineering<span class="font-semibold text-slate-700">1234567890</span></span>
+                                                <span>•</span>
+                                                <span>Instagram: @farreladitya<span class="font-semibold text-slate-700">Nama Program Studi</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- (Tambahkan anggota baru dengan menduplikat blok di atas jika anggota lebih dari 3) --}}
+                                </div>
+                            </div>
+                        </section>
+
                     </div>
 
                     {{-- ── KOLOM KANAN: Informasi Pendukung (Kondisi Wilayah, Hotline 112, Edukasi, Peta) ── --}}
