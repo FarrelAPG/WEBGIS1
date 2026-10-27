@@ -15,11 +15,7 @@
         <div class="p-6">
             {{-- Logo SIGAP --}}
             <div class="mb-8 flex items-center gap-3">
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E52329] text-white shadow-sm">
-                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 23c6.075 0 11-4.925 11-11 0-4.04-2.18-7.572-5.434-9.524a.75.75 0 0 0-1.096.862C17.065 5.508 17.5 7.95 17.5 10c0 .605-.06 1.196-.176 1.767a8.96 8.96 0 0 0-3.324-2.767.75.75 0 0 0-1.077.72c.078 1.488-.363 2.981-1.282 4.108C10.59 15.12 9.297 15.75 8 15.75c-.88 0-1.725-.262-2.45-.733A6.974 6.974 0 0 1 4.5 12c0-2.316.892-4.423 2.352-6.002a.75.75 0 0 0-.58-1.222C3.132 5.378 1 8.442 1 12c0 6.075 4.925 11 11 11z"/>
-                    </svg>
-                </div>
+                <img src="{{ asset('images/logo-sigap-red.png') }}" alt="SIGAP Damkar" class="h-10 w-10 shrink-0 rounded-xl object-contain shadow-sm">
                 <div>
                     <h1 class="text-lg font-extrabold leading-none tracking-wide text-slate-900">SIGAP</h1>
                     <p class="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">Pos Komando Damkar</p>

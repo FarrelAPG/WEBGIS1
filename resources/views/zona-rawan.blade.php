@@ -14,9 +14,7 @@
 
         <header class="sticky top-0 z-20 border-b border-[#f2e9e6] bg-[#fffaf8]/95 px-5 py-3 backdrop-blur">
             <div class="flex items-center gap-3">
-                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#c41621] p-2 shadow-sm">
-                    <img src="{{ asset('images/sigap-logo.svg') }}" alt="" class="h-full w-full object-contain">
-                </span>
+                <img src="{{ asset('images/logo-sigap-red.png') }}" alt="SIGAP DAMKAR" class="h-11 w-11 shrink-0 rounded-xl object-contain shadow-sm">
                 <span class="leading-tight">
                     <span class="block text-sm font-extrabold tracking-[0.08em] text-[#bd101b]">SIGAP</span>
                     <span class="block text-[11px] font-bold uppercase tracking-wide text-[#5c4f4c]">Zona Rawan</span>

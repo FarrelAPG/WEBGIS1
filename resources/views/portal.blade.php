@@ -25,9 +25,7 @@
             </span>
 
             <div class="mt-4 flex items-center justify-center gap-3">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E52329] p-2 shadow-lg shadow-red-600/30">
-                    <img src="{{ asset('images/sigap-logo.svg') }}" alt="SIGAP Logo" class="h-full w-full object-contain">
-                </div>
+                <img src="{{ asset('images/logo-sigap-red.png') }}" alt="SIGAP DAMKAR" class="h-12 w-12 shrink-0 rounded-2xl object-contain shadow-lg shadow-red-600/30">
                 <div class="text-left">
                     <h1 class="text-3xl font-black tracking-tight text-white sm:text-4xl">SIGAP DAMKAR</h1>
                     <p class="text-xs font-semibold tracking-wide text-slate-400">Sistem Informasi Geografis &amp; Armada Pemadam</p>
