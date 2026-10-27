@@ -31,6 +31,7 @@ Route::get('/masyarakat/profile', [MasyarakatProfileController::class, 'index'])
 // Halaman edukasi & antisipasi kebakaran publik (tanpa middleware auth)
 Route::get('/edukasi', [EdukasiController::class, 'index'])->name('edukasi.index');
 Route::get('/edukasi/metode-tata', [EdukasiController::class, 'tata'])->name('edukasi.tata');
+Route::get('/edukasi/{slug}', [EdukasiController::class, 'show'])->name('edukasi.show');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

@@ -78,7 +78,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach ($artikel as $a)
-                    <a href="{{ $a['slug'] === 'metode-tata' ? route('edukasi.tata') : route('edukasi.tata') }}" class="group flex flex-col justify-between rounded-2xl border border-[#f0e8e5] bg-white p-5 shadow-sm transition hover:border-[#dc2626]/40 hover:shadow-md">
+                    <a href="{{ route('edukasi.show', $a['slug']) }}" class="group flex flex-col justify-between rounded-2xl border border-[#f0e8e5] bg-white p-5 shadow-sm transition hover:border-[#dc2626]/40 hover:shadow-md">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-3">
                                 <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#fdecea] text-[#c41621] group-hover:bg-[#fee2e2] text-2xl transition-colors" aria-hidden="true">{{ $a['ikonen'] }}</span>

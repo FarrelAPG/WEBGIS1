@@ -72,4 +72,23 @@ class EdukasiController extends Controller
     {
         return view('edukasi.tata');
     }
+
+    /**
+     * Tampilkan detail artikel edukasi berdasarkan slug.
+     */
+    public function show(string $slug): View
+    {
+        $viewMap = [
+            'metode-tata' => 'edukasi.tata',
+            'kebocoran-tabung-gas' => 'edukasi.gas-bocor',
+            'jalur-evakuasi' => 'edukasi.jalur-evakuasi',
+            'pencegahan-kebakaran-rumah' => 'edukasi.pencegahan-rumah',
+            'kecelakaan-listrik' => 'edukasi.kecelakaan-listrik',
+            'penggunaan-apar' => 'edukasi.penggunaan-apar',
+        ];
+
+        abort_unless(isset($viewMap[$slug]), 404);
+
+        return view($viewMap[$slug]);
+    }
 }
