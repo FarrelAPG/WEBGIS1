@@ -224,7 +224,6 @@
                         <section aria-labelledby="area-title" class="space-y-2.5">
                             <div class="flex items-center justify-between gap-2">
                                 <h2 id="area-title" class="text-sm sm:text-base font-bold text-[#292626]">Kondisi Wilayah Sekitar</h2>
-                                <span class="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-[#bd101b]">Pembaruan 1m lalu</span>
                             </div>
                             <div class="grid grid-cols-3 gap-2.5 sm:gap-3 lg:gap-4">
                                 <article class="min-w-0 rounded-2xl border border-[#f3eeeb] bg-white p-3.5 sm:p-4 shadow-[0_3px_10px_rgba(65,45,40,0.04)] hover:shadow-md transition">
