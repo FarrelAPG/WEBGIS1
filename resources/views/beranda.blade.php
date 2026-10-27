@@ -220,10 +220,10 @@
                     {{-- ── KOLOM KANAN: Informasi Pendukung (Kondisi Wilayah, Hotline 112, Edukasi, Peta) ── --}}
                     <div class="space-y-6 order-2 lg:order-3 lg:col-start-2 lg:row-start-1 lg:row-span-2">
 
-                        {{-- Kondisi Wilayah Sekitar --}}
+                        {{-- Kondisi & Kesiapan Wilayah --}}
                         <section aria-labelledby="area-title" class="space-y-2.5">
                             <div class="flex items-center justify-between gap-2">
-                                <h2 id="area-title" class="text-sm sm:text-base font-bold text-[#292626]">Kondisi Wilayah Sekitar</h2>
+                                <h2 id="area-title" class="text-sm sm:text-base font-bold text-[#292626]">Kondisi &amp; Kesiapan Wilayah</h2>
                             </div>
                             <div class="grid grid-cols-3 gap-2.5 sm:gap-3 lg:gap-4">
                                 <article class="min-w-0 rounded-2xl border border-[#f3eeeb] bg-white p-3.5 sm:p-4 shadow-[0_3px_10px_rgba(65,45,40,0.04)] hover:shadow-md transition">
@@ -248,13 +248,13 @@
                                 </article>
                                 <article class="min-w-0 rounded-2xl border border-[#f3eeeb] bg-white p-3.5 sm:p-4 shadow-[0_3px_10px_rgba(65,45,40,0.04)] hover:shadow-md transition">
                                     <div class="mb-2 sm:mb-3 flex items-center gap-1.5">
-                                        <span class="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-[#ffe1cc] text-[#a44d0b]">
-                                            <svg class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m10.3 3.8-8 14A2 2 0 0 0 4 20.8h16a2 2 0 0 0 1.7-3l-8-14a2 2 0 0 0-3.4 0ZM12 9v4m0 3h.01"/></svg>
+                                        <span class="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                                            <svg class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                                         </span>
-                                        <span class="whitespace-nowrap rounded-full bg-[#ffe1cc] px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-[#704018]">Waspada</span>
+                                        <span class="whitespace-nowrap rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-emerald-800">Siaga 24/7</span>
                                     </div>
                                     <p class="text-[17px] sm:text-lg font-bold leading-tight">24 Jam</p>
-                                    <p class="mt-0.5 text-[11px] sm:text-xs text-[#685b57]">Status Siaga</p>
+                                    <p class="mt-0.5 text-[11px] sm:text-xs text-[#685b57]">Layanan Siaga</p>
                                 </article>
                             </div>
                         </section>
